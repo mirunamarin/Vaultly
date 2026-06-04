@@ -13,7 +13,7 @@ object VaultExportCrypto {
         plainBytes: ByteArray,
         password: CharArray,
         createdAt: Long = System.currentTimeMillis(),
-        emptyPasswordMessage: String
+        emptyPasswordMessage: String = "The export password cannot be empty."
     ): VaultExportEnvelope {
         require(password.isNotEmpty()) {
             emptyPasswordMessage
@@ -51,8 +51,8 @@ object VaultExportCrypto {
     fun decrypt(
         envelope: VaultExportEnvelope,
         password: CharArray,
-        emptyPasswordMessage: String,
-        unsupportedVersionMessage: String
+        emptyPasswordMessage: String = "The export password cannot be empty.",
+        unsupportedVersionMessage: String = "The export version is not supported."
     ): ByteArray {
         require(password.isNotEmpty()) {
             emptyPasswordMessage
