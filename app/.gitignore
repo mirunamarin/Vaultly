@@ -1,1 +1,70 @@
-/build
+# Gradle
+.gradle/
+build/
+*/build/
+
+# Kotlin / Android generated files
+.kotlin/
+.externalNativeBuild/
+.cxx/
+captures/
+
+# Android build outputs
+app/build/
+app/release/
+app/debug/
+app/outputs/
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Local machine configuration
+local.properties
+/local.properties
+
+# Android Studio / IntelliJ user-specific files
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/dictionaries/
+.idea/shelf/
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/deploymentTargetSelector.xml
+.idea/deviceManager.xml
+
+# IDE project files that are local/user-specific
+*.iml
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Signing keys and certificates - never publish
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key
+*.crt
+keystore.properties
+signing.properties
+
+# Secrets / environment files
+.env
+.env.*
+*.env
+secrets.properties
+
+# Generated deployment artifacts
+deployment/
