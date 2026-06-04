@@ -1,0 +1,218 @@
+<resources>
+    <string name="app_name">Vaultly</string>
+    <string name="vault_initial_status">Accesul la seiful digital este permis doar după validarea biometrică a utilizatorului.</string>
+    <string name="vault_session_expired">Sesiunea a expirat. Deblochează din nou Vaultly.</string>
+    <string name="vault_background_locked">Vaultly a fost blocat deoarece aplicația a intrat în fundal.</string>
+    <string name="auth_success">Autentificare reușită.</string>
+
+    <string name="biometric_subtitle_initial_unlock">Confirmă identitatea pentru a accesa seiful</string>
+    <string name="biometric_subtitle_passwords">Confirmă identitatea pentru a accesa parolele</string>
+    <string name="biometric_subtitle_files">Confirmă identitatea pentru a accesa fișierele</string>
+    <string name="biometric_subtitle_photos">Confirmă identitatea pentru a accesa fotografiile</string>
+    <string name="biometric_negative_exit">Ieși din aplicație</string>
+    <string name="biometric_negative_cancel">Anulează</string>
+    <string name="biometric_no_hardware">Dispozitivul nu are hardware biometric disponibil.</string>
+    <string name="biometric_hw_unavailable">Hardware-ul biometric este momentan indisponibil.</string>
+    <string name="biometric_none_enrolled">Nu există amprente sau date biometrice configurate pe dispozitiv.</string>
+    <string name="biometric_unavailable">Autentificarea biometrică nu este disponibilă pe acest dispozitiv.</string>
+    <string name="biometric_failed">Autentificarea biometrică a eșuat.</string>
+
+    <string name="database_key_unavailable">Cheia bazei de date nu mai poate fi decriptată.</string>
+    <string name="database_open_failed">Baza de date securizată nu a putut fi deschisă.</string>
+
+    <string name="photos_auth_title">Fotografii protejate</string>
+    <string name="photos_auth_message">Confirmă identitatea biometrică pentru a accesa fotografiile criptate.</string>
+    <string name="photos_auth_button">Autentificare biometrică</string>
+
+    <string name="passwords_auth_title">Parole protejate</string>
+    <string name="passwords_auth_message">Confirmă identitatea biometrică pentru a accesa parolele criptate.</string>
+    <string name="passwords_auth_button">Autentificare biometrică</string>
+    <string name="passwords_title">Parole</string>
+    <string name="passwords_search_label">Caută parole</string>
+    <string name="passwords_empty_title">Nu există parole salvate.</string>
+    <string name="passwords_empty_message">Apasă + pentru a adăuga prima parolă criptată.</string>
+    <string name="password_new_title">Parolă nouă</string>
+    <string name="password_edit_title">Editare parolă</string>
+    <string name="password_service_label">Serviciu</string>
+    <string name="password_username_label">Username</string>
+    <string name="password_label">Parolă</string>
+    <string name="password_url_label">URL</string>
+    <string name="password_note_label">Notă</string>
+    <string name="password_generator_button">Generator</string>
+    <string name="password_copy_button">Copiază</string>
+    <string name="password_save_button">Salvează</string>
+    <string name="password_delete_button">Șterge parola</string>
+    <string name="password_copied">Parola a fost copiată.</string>
+    <string name="password_delete_dialog_title">Ștergi parola?</string>
+    <string name="password_delete_dialog_message">Această acțiune elimină definitiv intrarea din seiful criptat.</string>
+    <string name="password_validation_required_fields">Completează serviciul, username-ul și parola.</string>
+    <string name="password_clipboard_label">Parolă Vaultly</string>
+
+    <string name="common_back">Înapoi</string>
+
+    <string name="files_auth_title">Fișiere protejate</string>
+    <string name="files_auth_message">Confirmă identitatea biometrică pentru a accesa documentele criptate.</string>
+    <string name="files_auth_button">Autentificare biometrică</string>
+    <string name="files_title">Fișiere</string>
+    <string name="files_search_label">Caută fișiere</string>
+    <string name="files_empty_title">Nu există fișiere criptate.</string>
+    <string name="files_empty_message">Apasă + pentru a importa un document prin Storage Access Framework.</string>
+    <string name="files_delete_dialog_title">Ștergi fișierul?</string>
+    <string name="files_delete_dialog_message">Fișierul criptat va fi șters definitiv din Vaultly.</string>
+    <string name="files_open_action">Deschide</string>
+    <string name="files_delete_action">Șterge</string>
+    <string name="files_open_chooser_title">Deschide fișierul</string>
+    <string name="files_no_app_available">Nu există o aplicație disponibilă pentru acest tip de fișier.</string>
+    <string name="files_fallback_name_prefix">fisier</string>
+    <string name="files_metadata_format">%1$s • %2$d bytes</string>
+    <string name="files_importing">Se importă fișierul...</string>
+    <string name="files_preparing_open">Se pregătește pentru deschidere...</string>
+    <string name="files_import_success">Fișierul a fost importat.</string>
+    <string name="files_delete_success">Fișierul a fost șters.</string>
+    <string name="files_open_ready">Fișierul a fost pregătit pentru deschidere.</string>
+
+    <string name="photos_title">Fotografii</string>
+    <string name="photos_empty_title">Nu există fotografii private.</string>
+    <string name="photos_empty_message">Apasă + pentru a importa o fotografie în galerie.</string>
+    <string name="photos_fallback_name_prefix">fotografie</string>
+    <string name="photos_fallback_name_extension">.jpg</string>
+    <string name="photo_default_title">Fotografie</string>
+    <string name="photo_delete_button">Șterge fotografia</string>
+    <string name="photo_delete_dialog_title">Ștergi fotografia?</string>
+    <string name="photo_delete_dialog_message">Fotografia criptată va fi ștearsă definitiv din internal storage.</string>
+    <string name="photos_importing">Se importă fotografia...</string>
+    <string name="photo_loading">Se încarcă fotografia...</string>
+    <string name="photos_import_success">Fotografia a fost importată.</string>
+    <string name="photo_not_found">Fotografia nu a fost găsită.</string>
+
+    <string name="notes_title">Notițe</string>
+    <string name="notes_search_label">Caută în notițe</string>
+    <string name="notes_empty_title">Nu există notițe încă.</string>
+    <string name="notes_empty_message">Apasă + pentru a crea prima notiță criptată.</string>
+    <string name="notes_no_content">Fără conținut</string>
+
+    <string name="note_new_title">Notiță nouă</string>
+    <string name="note_edit_title">Editare notiță</string>
+    <string name="note_title_label">Titlu</string>
+    <string name="note_content_label">Conținut</string>
+    <string name="note_save_button">Salvează</string>
+    <string name="note_delete_button">Șterge notița</string>
+    <string name="note_delete_dialog_title">Ștergi notița?</string>
+    <string name="note_delete_dialog_message">Această acțiune elimină definitiv notița din seiful criptat.</string>
+    <string name="note_validation_empty">Completează titlul sau conținutul.</string>
+    <string name="note_default_title">Notiță fără titlu</string>
+
+    <string name="common_delete">Șterge</string>
+    <string name="common_cancel">Anulează</string>
+
+    <string name="secure_text_show">Arată</string>
+    <string name="secure_text_hide">Ascunde</string>
+
+    <string name="lock_subtitle">Protejează ce contează. Accesează ce îți aparține.</string>
+    <string name="lock_unlock_button">Deblochează cu biometria</string>
+    <string name="lock_footer">Datele tale rămân private și protejate</string>
+
+    <string name="home_subtitle">Seiful tău digital securizat biometric</string>
+    <string name="home_settings_button">Setări</string>
+    <string name="home_modules_title">Module</string>
+    <string name="home_protection_title">Protecție activă</string>
+    <string name="home_protection_body">Capturile de ecran sunt blocate, baza de date este criptată, iar secțiunile sensibile cer autentificare biometrică separată.</string>
+    <string name="home_module_notes_title">Notițe</string>
+    <string name="home_module_notes_description">Text privat criptat în baza de date</string>
+    <string name="home_module_notes_marker">N</string>
+    <string name="home_module_passwords_title">Parole</string>
+    <string name="home_module_passwords_description">Manager de parole cu re-autentificare</string>
+    <string name="home_module_passwords_marker">P</string>
+    <string name="home_module_photos_title">Fotografii</string>
+    <string name="home_module_photos_description">Galerie privată criptată local</string>
+    <string name="home_module_photos_marker">F</string>
+    <string name="home_module_files_title">Fișiere</string>
+    <string name="home_module_files_description">Documente criptate în internal storage</string>
+    <string name="home_module_files_marker">D</string>
+
+    <string name="settings_title">Setări</string>
+    <string name="settings_security_title">Securitate activă</string>
+    <string name="settings_security_body">Capturile de ecran sunt blocate prin FLAG_SECURE. Datele aplicației sunt păstrate local și criptate.</string>
+    <string name="settings_biometric_title">Autentificare biometrică</string>
+    <string name="settings_biometric_body">Accesul inițial cere biometrie. Parolele, Fișierele și Fotografiile cer re-autentificare separată.</string>
+    <string name="settings_encryption_title">Criptare locală</string>
+    <string name="settings_encryption_body">Baza de date folosește SQLCipher, iar fișierele și fotografiile sunt criptate în internal storage.</string>
+
+    <string name="password_generator_title">Generator parolă</string>
+    <string name="password_generator_length_format">Lungime: %1$d</string>
+    <string name="password_generator_uppercase">Majuscule</string>
+    <string name="password_generator_digits">Cifre</string>
+    <string name="password_generator_symbols">Simboluri</string>
+    <string name="password_generator_placeholder">Generează o parolă nouă</string>
+    <string name="password_generator_generate_button">Generează</string>
+    <string name="password_generator_use_button">Folosește parola</string>
+    <string name="password_generator_close_button">Închide</string>
+
+    <string name="encrypted_image_load_error">Imaginea nu poate fi afișată</string>
+    <string name="encrypted_image_invalid">Imagine invalidă</string>
+
+    <string name="password_security_ok">OK</string>
+    <string name="password_security_weak">Slabă</string>
+    <string name="password_security_reused">Reutilizată</string>
+    <string name="password_security_weak_reused">Slabă + reutilizată</string>
+    <string name="password_security_warning_title">Avertismente securitate</string>
+    <string name="password_security_issue_too_short">Parola are mai puțin de 12 caractere.</string>
+    <string name="password_security_issue_no_lowercase">Parola nu conține litere mici.</string>
+    <string name="password_security_issue_no_uppercase">Parola nu conține litere mari.</string>
+    <string name="password_security_issue_no_digit">Parola nu conține cifre.</string>
+    <string name="password_security_issue_no_symbol">Parola nu conține simboluri.</string>
+    <string name="password_security_issue_common">Parola este prea comună.</string>
+    <string name="password_security_issue_reused">Parola este reutilizată la mai multe intrări.</string>
+
+    <string name="export_title">Export criptat</string>
+    <string name="export_body">Creează un fișier criptat .vaultly cu notițele, parolele, fișierele și fotografiile salvate.</string>
+    <string name="export_password_label">Parolă export</string>
+    <string name="export_password_confirmation_label">Confirmă parola de export</string>
+    <string name="export_button">Exportă Vaultly</string>
+    <string name="export_in_progress">Export în curs...</string>
+    <string name="export_error_password_empty">The export password cannot be empty.</string>
+    <string name="export_error_password_too_short">The export password must have at least 8 characters.</string>
+    <string name="export_error_password_mismatch">The export passwords do not match.</string>
+    <string name="export_error_file_open_failed">The export file could not be opened.</string>
+    <string name="export_success">Encrypted export completed.</string>
+    <string name="export_error_failed">Encrypted export could not be completed.</string>
+
+    <string name="error_secure_access_expired">Accesul securizat a expirat. Autentifică-te din nou.</string>
+    <string name="error_invalid_selected_file">Fișierul selectat nu este valid.</string>
+    <string name="error_file_operation_failed">Operația cu fișierul nu a putut fi finalizată.</string>
+    <string name="error_invalid_selected_photo">Fotografia selectată nu este validă.</string>
+    <string name="error_photo_operation_failed">Operația cu fotografia nu a putut fi finalizată.</string>
+    <string name="error_note_operation_failed">Operația cu notița nu a putut fi finalizată.</string>
+    <string name="error_password_operation_failed">Operația nu a putut fi finalizată.</string>
+
+    <string name="biometric_subtitle_export">Confirmă identitatea pentru a exporta datele Vaultly</string>
+
+    <string name="file_error_invalid_name">Fișierul selectat nu are un nume valid.</string>
+    <string name="file_error_empty">Fișierul selectat este gol.</string>
+    <string name="file_error_too_large">Fișierul selectat depășește limita de 100 MB.</string>
+
+    <string name="photo_error_cannot_read">Fotografia selectată nu poate fi citită.</string>
+    <string name="photo_error_cannot_process">Fotografia selectată nu poate fi procesată.</string>
+    <string name="photo_error_invalid_name">Fotografia selectată nu are un nume valid.</string>
+    <string name="photo_error_invalid_type">Fișierul selectat nu este o imagine validă.</string>
+    <string name="photo_error_empty">Fotografia selectată este goală.</string>
+    <string name="photo_error_too_large">Fotografia selectată depășește limita de 25 MB.</string>
+
+    <string name="crypto_error_auth_expired">Autentificarea biometrică a expirat. Deblochează din nou Vaultly.</string>
+    <string name="crypto_error_key_invalidated">Cheia de securitate Vaultly a fost invalidată. Reconfigurează autentificarea biometrică.</string>
+    <string name="crypto_error_data_validation_failed">Datele criptate nu au putut fi validate.</string>
+    <string name="crypto_error_operation_failed">Operația criptografică nu a putut fi finalizată.</string>
+    <string name="crypto_error_invalid_structure">Datele criptate au o structură invalidă.</string>
+    <string name="database_key_decrypt_failed">Cheia bazei de date nu mai poate fi decriptată. Datele existente nu pot fi accesate fără cheia originală.</string>
+    <string name="database_key_create_failed">Cheia bazei de date nu a putut fi creată.</string>
+    <string name="database_key_save_failed">Cheia bazei de date nu a putut fi salvată în siguranță.</string>
+
+    <string name="encrypted_file_error_cannot_read_selected">Fișierul selectat nu poate fi citit.</string>
+    <string name="encrypted_file_error_missing">Fișierul criptat nu există.</string>
+    <string name="encrypted_file_error_replace_failed">Fișierul criptat existent nu a putut fi înlocuit.</string>
+    <string name="encrypted_file_error_temp_finalize_failed">Fișierul criptat temporar nu a putut fi finalizat.</string>
+    <string name="encrypted_file_error_invalid_structure">Fișierul criptat are o structură invalidă.</string>
+
+    <string name="export_error_unsupported_version">Versiunea exportului nu este suportată.</string>
+
+</resources>

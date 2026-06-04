@@ -1,0 +1,216 @@
+<resources>
+    <string name="app_name">Vaultly</string>
+    <string name="vault_initial_status">Access to the digital vault is allowed only after biometric verification.</string>
+    <string name="vault_session_expired">The session has expired. Unlock Vaultly again.</string>
+    <string name="vault_background_locked">Vaultly was locked because the app moved to the background.</string>
+    <string name="auth_success">Authentication successful.</string>
+
+    <string name="biometric_subtitle_initial_unlock">Confirm your identity to access the vault</string>
+    <string name="biometric_subtitle_passwords">Confirm your identity to access passwords</string>
+    <string name="biometric_subtitle_files">Confirm your identity to access files</string>
+    <string name="biometric_subtitle_photos">Confirm your identity to access photos</string>
+    <string name="biometric_subtitle_export">Confirm your identity to export Vaultly data</string>
+    <string name="biometric_negative_exit">Exit app</string>
+    <string name="biometric_negative_cancel">Cancel</string>
+    <string name="biometric_no_hardware">This device does not have biometric hardware available.</string>
+    <string name="biometric_hw_unavailable">Biometric hardware is currently unavailable.</string>
+    <string name="biometric_none_enrolled">No fingerprints or biometric credentials are configured on this device.</string>
+    <string name="biometric_unavailable">Biometric authentication is not available on this device.</string>
+    <string name="biometric_failed">Biometric authentication failed.</string>
+
+    <string name="database_key_unavailable">The database key can no longer be decrypted.</string>
+    <string name="database_open_failed">The secure database could not be opened.</string>
+
+    <string name="photos_auth_title">Protected photos</string>
+    <string name="photos_auth_message">Confirm your biometric identity to access encrypted photos.</string>
+    <string name="photos_auth_button">Biometric authentication</string>
+
+    <string name="passwords_auth_title">Protected passwords</string>
+    <string name="passwords_auth_message">Confirm your biometric identity to access encrypted passwords.</string>
+    <string name="passwords_auth_button">Biometric authentication</string>
+    <string name="passwords_title">Passwords</string>
+    <string name="passwords_search_label">Search passwords</string>
+    <string name="passwords_empty_title">No saved passwords.</string>
+    <string name="passwords_empty_message">Tap + to add your first encrypted password.</string>
+    <string name="password_new_title">New password</string>
+    <string name="password_edit_title">Edit password</string>
+    <string name="password_service_label">Service</string>
+    <string name="password_username_label">Username</string>
+    <string name="password_label">Password</string>
+    <string name="password_url_label">URL</string>
+    <string name="password_note_label">Note</string>
+    <string name="password_generator_button">Generator</string>
+    <string name="password_copy_button">Copy</string>
+    <string name="password_save_button">Save</string>
+    <string name="password_delete_button">Delete password</string>
+    <string name="password_copied">Password copied.</string>
+    <string name="password_delete_dialog_title">Delete password?</string>
+    <string name="password_delete_dialog_message">This action permanently removes the entry from the encrypted vault.</string>
+    <string name="password_validation_required_fields">Complete the service, username and password.</string>
+    <string name="password_clipboard_label">Vaultly password</string>
+
+    <string name="common_back">Back</string>
+    <string name="common_delete">Delete</string>
+    <string name="common_cancel">Cancel</string>
+
+    <string name="files_auth_title">Protected files</string>
+    <string name="files_auth_message">Confirm your biometric identity to access encrypted documents.</string>
+    <string name="files_auth_button">Biometric authentication</string>
+    <string name="files_title">Files</string>
+    <string name="files_search_label">Search files</string>
+    <string name="files_empty_title">No encrypted files.</string>
+    <string name="files_empty_message">Tap + to import a document through the Storage Access Framework.</string>
+    <string name="files_delete_dialog_title">Delete file?</string>
+    <string name="files_delete_dialog_message">The encrypted file will be permanently deleted from Vaultly.</string>
+    <string name="files_open_action">Open</string>
+    <string name="files_delete_action">Delete</string>
+    <string name="files_open_chooser_title">Open file</string>
+    <string name="files_no_app_available">No app is available for this file type.</string>
+    <string name="files_fallback_name_prefix">file</string>
+    <string name="files_metadata_format">%1$s • %2$d bytes</string>
+    <string name="files_importing">Importing file...</string>
+    <string name="files_preparing_open">Preparing file...</string>
+    <string name="files_import_success">The file was imported.</string>
+    <string name="files_delete_success">The file was deleted.</string>
+    <string name="files_open_ready">The file is ready to open.</string>
+
+
+    <string name="photos_title">Photos</string>
+    <string name="photos_empty_title">No private photos.</string>
+    <string name="photos_empty_message">Tap + to import a photo into the gallery.</string>
+    <string name="photos_fallback_name_prefix">photo</string>
+    <string name="photos_fallback_name_extension">.jpg</string>
+    <string name="photo_default_title">Photo</string>
+    <string name="photo_delete_button">Delete photo</string>
+    <string name="photo_delete_dialog_title">Delete photo?</string>
+    <string name="photo_delete_dialog_message">The encrypted photo will be permanently deleted from internal storage.</string>
+    <string name="photos_importing">Importing photo...</string>
+    <string name="photo_loading">Loading photo...</string>
+    <string name="photos_import_success">The photo was imported.</string>
+    <string name="photo_not_found">The photo was not found.</string>
+
+    <string name="notes_title">Notes</string>
+    <string name="notes_search_label">Search notes</string>
+    <string name="notes_empty_title">No notes yet.</string>
+    <string name="notes_empty_message">Tap + to create your first encrypted note.</string>
+    <string name="notes_no_content">No content</string>
+    <string name="note_new_title">New note</string>
+    <string name="note_edit_title">Edit note</string>
+    <string name="note_title_label">Title</string>
+    <string name="note_content_label">Content</string>
+    <string name="note_save_button">Save</string>
+    <string name="note_delete_button">Delete note</string>
+    <string name="note_delete_dialog_title">Delete note?</string>
+    <string name="note_delete_dialog_message">This action permanently removes the note from the encrypted vault.</string>
+    <string name="note_validation_empty">Complete the title or content.</string>
+    <string name="note_default_title">Untitled note</string>
+
+    <string name="secure_text_show">Show</string>
+    <string name="secure_text_hide">Hide</string>
+
+    <string name="lock_subtitle">Secure what matters. Access what\'s yours.</string>
+    <string name="lock_unlock_button">Unlock with your biometrics</string>
+    <string name="lock_footer">Your data stays private and protected</string>
+
+    <string name="home_subtitle">Your biometric-secured digital vault</string>
+    <string name="home_settings_button">Settings</string>
+    <string name="home_modules_title">Modules</string>
+    <string name="home_protection_title">Active protection</string>
+    <string name="home_protection_body">Screenshots are blocked, the database is encrypted, and sensitive sections require separate biometric authentication.</string>
+    <string name="home_module_notes_title">Notes</string>
+    <string name="home_module_notes_description">Private text encrypted in the database</string>
+    <string name="home_module_notes_marker">N</string>
+    <string name="home_module_passwords_title">Passwords</string>
+    <string name="home_module_passwords_description">Password manager with re-authentication</string>
+    <string name="home_module_passwords_marker">P</string>
+    <string name="home_module_photos_title">Photos</string>
+    <string name="home_module_photos_description">Private gallery encrypted locally</string>
+    <string name="home_module_photos_marker">P</string>
+    <string name="home_module_files_title">Files</string>
+    <string name="home_module_files_description">Documents encrypted in internal storage</string>
+    <string name="home_module_files_marker">F</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_security_title">Active security</string>
+    <string name="settings_security_body">Screenshots are blocked through FLAG_SECURE. App data is stored locally and encrypted.</string>
+    <string name="settings_biometric_title">Biometric authentication</string>
+    <string name="settings_biometric_body">Initial access requires biometrics. Passwords, Files and Photos require separate re-authentication.</string>
+    <string name="settings_encryption_title">Local encryption</string>
+    <string name="settings_encryption_body">The database uses SQLCipher, while files and photos are encrypted in internal storage.</string>
+
+    <string name="password_generator_title">Password generator</string>
+    <string name="password_generator_length_format">Length: %1$d</string>
+    <string name="password_generator_uppercase">Uppercase</string>
+    <string name="password_generator_digits">Digits</string>
+    <string name="password_generator_symbols">Symbols</string>
+    <string name="password_generator_placeholder">Generate a new password</string>
+    <string name="password_generator_generate_button">Generate</string>
+    <string name="password_generator_use_button">Use password</string>
+    <string name="password_generator_close_button">Close</string>
+
+    <string name="encrypted_image_load_error">The image cannot be displayed</string>
+    <string name="encrypted_image_invalid">Invalid image</string>
+
+    <string name="password_security_ok">OK</string>
+    <string name="password_security_weak">Weak</string>
+    <string name="password_security_reused">Reused</string>
+    <string name="password_security_weak_reused">Weak + reused</string>
+    <string name="password_security_warning_title">Security warnings</string>
+    <string name="password_security_issue_too_short">The password has fewer than 12 characters.</string>
+    <string name="password_security_issue_no_lowercase">The password does not contain lowercase letters.</string>
+    <string name="password_security_issue_no_uppercase">The password does not contain uppercase letters.</string>
+    <string name="password_security_issue_no_digit">The password does not contain digits.</string>
+    <string name="password_security_issue_no_symbol">The password does not contain symbols.</string>
+    <string name="password_security_issue_common">The password is too common.</string>
+    <string name="password_security_issue_reused">The password is reused across multiple entries.</string>
+
+    <string name="export_title">Encrypted export</string>
+    <string name="export_body">Create an encrypted .vaultly file with your saved notes, passwords, files and photos.</string>
+    <string name="export_password_label">Export password</string>
+    <string name="export_password_confirmation_label">Confirm export password</string>
+    <string name="export_button">Export Vaultly</string>
+    <string name="export_in_progress">Export in progress...</string>
+    <string name="export_error_password_empty">Parola de export nu poate fi goală.</string>
+    <string name="export_error_password_too_short">Parola de export trebuie să aibă cel puțin 8 caractere.</string>
+    <string name="export_error_password_mismatch">Parolele de export nu coincid.</string>
+    <string name="export_error_file_open_failed">Fișierul de export nu a putut fi deschis.</string>
+    <string name="export_success">Exportul criptat a fost finalizat.</string>
+    <string name="export_error_failed">Exportul criptat nu a putut fi finalizat.</string>
+
+    <string name="error_secure_access_expired">Secure access has expired. Authenticate again.</string>
+    <string name="error_invalid_selected_file">The selected file is not valid.</string>
+    <string name="error_file_operation_failed">The file operation could not be completed.</string>
+    <string name="error_invalid_selected_photo">The selected photo is not valid.</string>
+    <string name="error_photo_operation_failed">The photo operation could not be completed.</string>
+    <string name="error_note_operation_failed">The note operation could not be completed.</string>
+    <string name="error_password_operation_failed">The operation could not be completed.</string>
+
+    <string name="file_error_invalid_name">The selected file does not have a valid name.</string>
+    <string name="file_error_empty">The selected file is empty.</string>
+    <string name="file_error_too_large">The selected file exceeds the 100 MB limit.</string>
+
+    <string name="photo_error_cannot_read">The selected photo cannot be read.</string>
+    <string name="photo_error_cannot_process">The selected photo cannot be processed.</string>
+    <string name="photo_error_invalid_name">The selected photo does not have a valid name.</string>
+    <string name="photo_error_invalid_type">The selected file is not a valid image.</string>
+    <string name="photo_error_empty">The selected photo is empty.</string>
+    <string name="photo_error_too_large">The selected photo exceeds the 25 MB limit.</string>
+
+    <string name="crypto_error_auth_expired">Biometric authentication has expired. Unlock Vaultly again.</string>
+    <string name="crypto_error_key_invalidated">The Vaultly security key has been invalidated. Reconfigure biometric authentication.</string>
+    <string name="crypto_error_data_validation_failed">Encrypted data could not be validated.</string>
+    <string name="crypto_error_operation_failed">The cryptographic operation could not be completed.</string>
+    <string name="crypto_error_invalid_structure">Encrypted data has an invalid structure.</string>
+    <string name="database_key_decrypt_failed">The database key can no longer be decrypted. Existing data cannot be accessed without the original key.</string>
+    <string name="database_key_create_failed">The database key could not be created.</string>
+    <string name="database_key_save_failed">The database key could not be saved securely.</string>
+
+    <string name="encrypted_file_error_cannot_read_selected">The selected file cannot be read.</string>
+    <string name="encrypted_file_error_missing">The encrypted file does not exist.</string>
+    <string name="encrypted_file_error_replace_failed">The existing encrypted file could not be replaced.</string>
+    <string name="encrypted_file_error_temp_finalize_failed">The temporary encrypted file could not be finalized.</string>
+    <string name="encrypted_file_error_invalid_structure">The encrypted file has an invalid structure.</string>
+
+    <string name="export_error_unsupported_version">The export version is not supported.</string>
+
+</resources>
