@@ -86,3 +86,12 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
+
+tasks.register<Copy>("deployDebugApk") {
+    dependsOn("assembleDebug")
+
+    from(layout.buildDirectory.file("outputs/apk/debug/app-debug.apk"))
+    into(rootProject.layout.projectDirectory.dir("deployment"))
+
+    rename { "Vaultly-debug.apk" }
+}
