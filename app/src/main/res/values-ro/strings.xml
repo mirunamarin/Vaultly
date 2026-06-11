@@ -215,4 +215,24 @@
 
     <string name="export_error_unsupported_version">Versiunea exportului nu este suportată.</string>
 
+    <string name="face_demo_title">Demo recunoaștere facială</string>
+    <string name="face_demo_module_title">Demo facial</string>
+    <string name="face_demo_module_description">Analiză facială în timp real pentru cercetare</string>
+    <string name="face_demo_subtitle">Modul demo pentru detectare, analiză și recunoaștere facială locală.</string>
+    <string name="face_demo_placeholder_title">Modul de cercetare pentru recunoaștere facială</string>
+    <string name="face_demo_placeholder_body">Această secțiune va demonstra detectarea feței, punctele faciale și analiza biometrică în timp real.</string>
+
+    <string name="face_demo_camera_permission_title">Este necesar accesul la cameră</string>
+    <string name="face_demo_camera_permission_body">Vaultly are nevoie de acces la cameră pentru a rula demo-ul de cercetare pentru recunoaștere facială.</string>
+    <string name="face_demo_camera_permission_button">Permite accesul la cameră</string>
+    <string name="face_demo_camera_permission_denied">Permisiunea pentru cameră a fost refuzată. Demo-ul nu poate rula fără acces la cameră.</string>
+
+    <string name="face_demo_analysis_title">Analiză facială live</string>
+    <string name="face_demo_faces_detected">Fețe detectate: %1$d</string>
+    <string name="face_demo_smile_probability">Probabilitate zâmbet: %1$s</string>
+    <string name="face_demo_left_eye_probability">Ochi stâng deschis: %1$s</string>
+    <string name="face_demo_right_eye_probability">Ochi drept deschis: %1$s</string>
+    <string name="face_demo_head_angle">Unghi cap: X %1$s / Y %2$s / Z %3$s</string>
+    <string name="face_demo_value_unavailable">Indisponibil</string>
+
 </resources>

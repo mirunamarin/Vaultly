@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.marinmiruna.vaultly.ui.screens.FilesAuthScreen
 import com.marinmiruna.vaultly.ui.screens.FilesListScreen
+import com.marinmiruna.vaultly.ui.screens.FaceRecognitionDemoScreen
 import com.marinmiruna.vaultly.ui.screens.HomeScreen
 import com.marinmiruna.vaultly.ui.screens.NoteDetailScreen
 import com.marinmiruna.vaultly.ui.screens.NotesListScreen
@@ -40,7 +41,10 @@ fun VaultlyNavGraph(
                 onOpenPasswords = { navController.navigate(Routes.PasswordsAuth.route) },
                 onOpenPhotos = { navController.navigate(Routes.PhotosAuth.route) },
                 onOpenFiles = { navController.navigate(Routes.FilesAuth.route) },
-                onOpenSettings = { navController.navigate(Routes.Settings.route) }
+                onOpenSettings = { navController.navigate(Routes.Settings.route) },
+                onOpenFaceRecognitionDemo = {
+                    navController.navigate(Routes.FaceRecognitionDemo.route)
+                }
             )
         }
 
@@ -208,6 +212,12 @@ fun VaultlyNavGraph(
             SettingsScreen(
                 onBack = { navController.popBackStack() },
                 onExportAuthRequested = onExportAuthRequested
+            )
+        }
+
+        composable(Routes.FaceRecognitionDemo.route) {
+            FaceRecognitionDemoScreen(
+                onBack = { navController.popBackStack() }
             )
         }
 

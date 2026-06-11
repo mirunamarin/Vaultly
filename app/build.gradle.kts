@@ -76,6 +76,14 @@ dependencies {
     ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.mlkit.face.detection)
+    implementation(libs.androidx.camera.mlkit.vision)
+    implementation(libs.litert)
+
     testImplementation(libs.junit)
 
     androidTestImplementation(libs.androidx.junit)

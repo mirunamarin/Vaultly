@@ -213,4 +213,24 @@
 
     <string name="export_error_unsupported_version">The export version is not supported.</string>
 
+    <string name="face_demo_title">Face recognition demo</string>
+    <string name="face_demo_module_title">Face demo</string>
+    <string name="face_demo_module_description">Real-time facial analysis for research</string>
+    <string name="face_demo_subtitle">Local demo module for facial detection, analysis, and recognition.</string>
+    <string name="face_demo_placeholder_title">Facial recognition research module</string>
+    <string name="face_demo_placeholder_body">This section will demonstrate face detection, facial landmarks and biometric analysis in real time.</string>
+
+    <string name="face_demo_camera_permission_title">Camera access required</string>
+    <string name="face_demo_camera_permission_body">Vaultly needs camera access to run the facial recognition research demo.</string>
+    <string name="face_demo_camera_permission_button">Allow camera access</string>
+    <string name="face_demo_camera_permission_denied">Camera permission was denied. The demo cannot run without camera access.</string>
+
+    <string name="face_demo_analysis_title">Live facial analysis</string>
+    <string name="face_demo_faces_detected">Faces detected: %1$d</string>
+    <string name="face_demo_smile_probability">Smile probability: %1$s</string>
+    <string name="face_demo_left_eye_probability">Left eye open: %1$s</string>
+    <string name="face_demo_right_eye_probability">Right eye open: %1$s</string>
+    <string name="face_demo_head_angle">Head angle: X %1$s / Y %2$s / Z %3$s</string>
+    <string name="face_demo_value_unavailable">Unavailable</string>
+
 </resources>

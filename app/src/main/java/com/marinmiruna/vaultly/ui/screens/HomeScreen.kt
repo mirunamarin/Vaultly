@@ -45,7 +45,8 @@ fun HomeScreen(
     onOpenPasswords: () -> Unit,
     onOpenPhotos: () -> Unit,
     onOpenFiles: () -> Unit,
-    onOpenSettings: () -> Unit
+    onOpenSettings: () -> Unit,
+    onOpenFaceRecognitionDemo: () -> Unit
 ) {
     val modules = listOf(
         VaultModule(
@@ -71,6 +72,12 @@ fun HomeScreen(
             description = stringResource(R.string.home_module_files_description),
             type = VaultModuleType.Files,
             onClick = onOpenFiles
+        ),
+        VaultModule(
+            title = stringResource(R.string.face_demo_module_title),
+            description = stringResource(R.string.face_demo_module_description),
+            type = VaultModuleType.FaceDemo,
+            onClick = onOpenFaceRecognitionDemo
         )
     )
 
@@ -130,7 +137,7 @@ fun HomeScreen(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(322.dp),
+                    .height(490.dp),
                 horizontalArrangement = Arrangement.spacedBy(14.dp),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
@@ -350,6 +357,60 @@ private fun ModuleIcon(
                     style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
                 )
             }
+
+            VaultModuleType.FaceDemo -> {
+                drawCircle(
+                    color = iconColor,
+                    radius = w * 0.28f,
+                    center = Offset(w * 0.5f, h * 0.5f),
+                    style = Stroke(width = strokeWidth)
+                )
+                drawCircle(
+                    color = iconColor,
+                    radius = w * 0.05f,
+                    center = Offset(w * 0.4f, h * 0.44f)
+                )
+                drawCircle(
+                    color = iconColor,
+                    radius = w * 0.05f,
+                    center = Offset(w * 0.6f, h * 0.44f)
+                )
+                drawLine(
+                    color = iconColor,
+                    start = Offset(w * 0.4f, h * 0.66f),
+                    end = Offset(w * 0.6f, h * 0.66f),
+                    strokeWidth = strokeWidth,
+                    cap = StrokeCap.Round
+                )
+                drawLine(
+                    color = iconColor,
+                    start = Offset(w * 0.18f, h * 0.24f),
+                    end = Offset(w * 0.3f, h * 0.24f),
+                    strokeWidth = strokeWidth,
+                    cap = StrokeCap.Round
+                )
+                drawLine(
+                    color = iconColor,
+                    start = Offset(w * 0.7f, h * 0.24f),
+                    end = Offset(w * 0.82f, h * 0.24f),
+                    strokeWidth = strokeWidth,
+                    cap = StrokeCap.Round
+                )
+                drawLine(
+                    color = iconColor,
+                    start = Offset(w * 0.18f, h * 0.76f),
+                    end = Offset(w * 0.3f, h * 0.76f),
+                    strokeWidth = strokeWidth,
+                    cap = StrokeCap.Round
+                )
+                drawLine(
+                    color = iconColor,
+                    start = Offset(w * 0.7f, h * 0.76f),
+                    end = Offset(w * 0.82f, h * 0.76f),
+                    strokeWidth = strokeWidth,
+                    cap = StrokeCap.Round
+                )
+            }
         }
     }
 }
@@ -366,5 +427,6 @@ private enum class VaultModuleType {
     Notes,
     Passwords,
     Photos,
-    Files
+    Files,
+    FaceDemo
 }
