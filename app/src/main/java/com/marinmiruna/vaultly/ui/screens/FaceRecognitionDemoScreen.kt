@@ -49,6 +49,14 @@ import com.marinmiruna.vaultly.ui.screens.facerecognition.smoothWith
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
+private enum class LivenessState {
+    NotStarted,
+    WaitingForOpenEyes,
+    WaitingForBlink,
+    WaitingForEyesOpenAgain,
+    Verified
+}
+
 @Composable
 fun FaceRecognitionDemoScreen(
     onBack: () -> Unit
@@ -132,6 +140,7 @@ private fun CameraPreviewCard() {
     var faceAnalysis by remember { mutableStateOf(FaceAnalysisResult()) }
     var previousFaceAnalysis by remember { mutableStateOf<FaceAnalysisResult?>(null) }
     var referenceEmbedding by remember { mutableStateOf<FaceEmbedding?>(null) }
+    var livenessState by remember { mutableStateOf(LivenessState.NotStarted) }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -160,8 +169,10 @@ private fun CameraPreviewCard() {
                             previous = previousFaceAnalysis,
                             alpha = FACE_ANALYSIS_SMOOTHING_FACTOR
                         )
+
                         previousFaceAnalysis = smoothedResult
                         faceAnalysis = smoothedResult
+                        livenessState = livenessState.next(smoothedResult)
                     },
                     modifier = Modifier.fillMaxSize()
                 )
@@ -176,14 +187,27 @@ private fun CameraPreviewCard() {
 
             SaveReferenceButton(
                 currentEmbedding = faceAnalysis.embedding,
-                onSave = { referenceEmbedding = it }
+                onSave = {
+                    referenceEmbedding = it
+                    livenessState = LivenessState.NotStarted
+                }
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LivenessButton(
+                livenessState = livenessState,
+                onStart = {
+                    livenessState = LivenessState.WaitingForOpenEyes
+                }
             )
 
             Spacer(modifier = Modifier.height(14.dp))
 
             FaceAnalysisPanel(
                 result = faceAnalysis,
-                referenceEmbedding = referenceEmbedding
+                referenceEmbedding = referenceEmbedding,
+                livenessState = livenessState
             )
         }
     }
@@ -206,9 +230,29 @@ private fun SaveReferenceButton(
 }
 
 @Composable
+private fun LivenessButton(
+    livenessState: LivenessState,
+    onStart: () -> Unit
+) {
+    Button(
+        onClick = onStart,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = when (livenessState) {
+                LivenessState.NotStarted -> "Începe verificarea liveness"
+                LivenessState.Verified -> "Reia verificarea liveness"
+                else -> "Repornește verificarea liveness"
+            }
+        )
+    }
+}
+
+@Composable
 private fun FaceAnalysisPanel(
     result: FaceAnalysisResult,
-    referenceEmbedding: FaceEmbedding? = null
+    referenceEmbedding: FaceEmbedding? = null,
+    livenessState: LivenessState
 ) {
     val unavailable = stringResource(R.string.face_demo_value_unavailable)
     val facePoseValid = result.isFacePoseValidForRecognition()
@@ -270,10 +314,23 @@ private fun FaceAnalysisPanel(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        Text(
+            text = livenessState.statusText(),
+            style = MaterialTheme.typography.bodyMedium,
+            color = when (livenessState) {
+                LivenessState.Verified -> MaterialTheme.colorScheme.primary
+                LivenessState.NotStarted -> MaterialTheme.colorScheme.onSurfaceVariant
+                else -> MaterialTheme.colorScheme.tertiary
+            }
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
         val matchText = when {
             referenceEmbedding == null -> "Referință FaceNet lipsă"
             result.embedding == null -> "Embedding facial indisponibil"
             !facePoseValid -> "Poziționează fața frontal pentru recunoaștere"
+            livenessState != LivenessState.Verified -> "Finalizează verificarea liveness înainte de potrivire"
             else -> {
                 val score = result.embedding.cosineSimilarity(referenceEmbedding)
                 val match = score >= FACE_NET_MATCH_THRESHOLD
@@ -288,11 +345,58 @@ private fun FaceAnalysisPanel(
                 referenceEmbedding == null -> MaterialTheme.colorScheme.onSurfaceVariant
                 result.embedding == null -> MaterialTheme.colorScheme.error
                 !facePoseValid -> MaterialTheme.colorScheme.tertiary
+                livenessState != LivenessState.Verified -> MaterialTheme.colorScheme.tertiary
                 result.embedding.cosineSimilarity(referenceEmbedding) >= FACE_NET_MATCH_THRESHOLD ->
                     MaterialTheme.colorScheme.primary
                 else -> MaterialTheme.colorScheme.error
             }
         )
+    }
+}
+
+private fun LivenessState.next(result: FaceAnalysisResult): LivenessState {
+    if (this == LivenessState.NotStarted || this == LivenessState.Verified) {
+        return this
+    }
+
+    if (!result.isFacePoseValidForRecognition()) {
+        return this
+    }
+
+    return when (this) {
+        LivenessState.WaitingForOpenEyes ->
+            if (result.areEyesOpenForLiveness()) {
+                LivenessState.WaitingForBlink
+            } else {
+                this
+            }
+
+        LivenessState.WaitingForBlink ->
+            if (result.areEyesClosedForLiveness()) {
+                LivenessState.WaitingForEyesOpenAgain
+            } else {
+                this
+            }
+
+        LivenessState.WaitingForEyesOpenAgain ->
+            if (result.areEyesOpenForLiveness()) {
+                LivenessState.Verified
+            } else {
+                this
+            }
+
+        LivenessState.NotStarted,
+        LivenessState.Verified -> this
+    }
+}
+
+private fun LivenessState.statusText(): String {
+    return when (this) {
+        LivenessState.NotStarted -> "Liveness: verificare neîncepută"
+        LivenessState.WaitingForOpenEyes -> "Liveness: privește frontal, cu ochii deschiși"
+        LivenessState.WaitingForBlink -> "Liveness: clipește o dată"
+        LivenessState.WaitingForEyesOpenAgain -> "Liveness: deschide ochii din nou"
+        LivenessState.Verified -> "Liveness verificat"
     }
 }
 
@@ -306,6 +410,22 @@ private fun FaceAnalysisResult.isFacePoseValidForRecognition(): Boolean {
     return abs(xAngle) <= MAX_RECOGNITION_PITCH_DEGREES &&
             abs(yAngle) <= MAX_RECOGNITION_YAW_DEGREES &&
             abs(zAngle) <= MAX_RECOGNITION_ROLL_DEGREES
+}
+
+private fun FaceAnalysisResult.areEyesOpenForLiveness(): Boolean {
+    val leftEye = leftEyeOpenProbability ?: return false
+    val rightEye = rightEyeOpenProbability ?: return false
+
+    return leftEye >= LIVENESS_EYE_OPEN_THRESHOLD &&
+            rightEye >= LIVENESS_EYE_OPEN_THRESHOLD
+}
+
+private fun FaceAnalysisResult.areEyesClosedForLiveness(): Boolean {
+    val leftEye = leftEyeOpenProbability ?: return false
+    val rightEye = rightEyeOpenProbability ?: return false
+
+    return leftEye <= LIVENESS_EYE_CLOSED_THRESHOLD &&
+            rightEye <= LIVENESS_EYE_CLOSED_THRESHOLD
 }
 
 @Composable
@@ -370,3 +490,5 @@ private const val FACE_NET_MATCH_THRESHOLD = 0.80f
 private const val MAX_RECOGNITION_YAW_DEGREES = 25f
 private const val MAX_RECOGNITION_ROLL_DEGREES = 20f
 private const val MAX_RECOGNITION_PITCH_DEGREES = 20f
+private const val LIVENESS_EYE_OPEN_THRESHOLD = 0.60f
+private const val LIVENESS_EYE_CLOSED_THRESHOLD = 0.35f
