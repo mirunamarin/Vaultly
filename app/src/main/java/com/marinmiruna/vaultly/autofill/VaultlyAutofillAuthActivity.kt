@@ -12,7 +12,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import android.content.Intent
 import android.service.autofill.Dataset
-import android.view.autofill.AutofillId
 import android.view.autofill.AutofillValue
 import android.widget.RemoteViews
 import kotlinx.coroutines.runBlocking
@@ -70,15 +69,12 @@ class VaultlyAutofillAuthActivity : FragmentActivity() {
                     finish()
                 }
 
-                override fun onAuthenticationFailed() {
-                    super.onAuthenticationFailed()
-                }
             }
         )
 
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(getString(R.string.app_name))
-            .setSubtitle("Confirmă identitatea pentru completarea parolei.")
+            .setSubtitle(getString(R.string.autofill_auth_subtitle))
             .setAllowedAuthenticators(
                 BiometricManager.Authenticators.BIOMETRIC_STRONG or
                         BiometricManager.Authenticators.DEVICE_CREDENTIAL

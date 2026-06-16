@@ -284,4 +284,6 @@
 
     <string name="face_demo_reference_saved">Reference face saved.</string>
 
+    <string name="autofill_auth_subtitle">Confirm your identity to fill the password.</string>
+
 </resources>

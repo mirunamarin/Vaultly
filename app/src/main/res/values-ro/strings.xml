@@ -286,4 +286,6 @@
 
     <string name="face_demo_reference_saved">Fața de referință a fost salvată.</string>
 
+    <string name="autofill_auth_subtitle">Confirmă identitatea pentru completarea parolei.</string>
+
 </resources>
