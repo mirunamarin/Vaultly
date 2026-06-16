@@ -25,19 +25,20 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.marinmiruna.vaultly.R
+import com.marinmiruna.vaultly.ui.components.ScreenHeader
 import com.marinmiruna.vaultly.ui.screens.facerecognition.CameraPreview
 import com.marinmiruna.vaultly.ui.screens.facerecognition.FaceAnalysisResult
 import com.marinmiruna.vaultly.ui.screens.facerecognition.FaceDetectionOverlay
@@ -48,6 +49,7 @@ import com.marinmiruna.vaultly.ui.screens.facerecognition.formatPercentOrUnavail
 import com.marinmiruna.vaultly.ui.screens.facerecognition.smoothWith
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import androidx.compose.material3.ButtonDefaults
 
 private enum class LivenessState {
     NotStarted,
@@ -94,24 +96,13 @@ fun FaceRecognitionDemoScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 24.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(R.string.face_demo_title),
-                    style = MaterialTheme.typography.displaySmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.weight(1f)
-                )
+            ScreenHeader(
+                title = stringResource(R.string.face_demo_title),
+                onBack = onBack,
+                titleStyle = MaterialTheme.typography.titleLarge
+            )
 
-                TextButton(onClick = onBack) {
-                    Text(text = stringResource(R.string.common_back))
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 text = stringResource(R.string.face_demo_subtitle),
@@ -141,6 +132,7 @@ private fun CameraPreviewCard() {
     var previousFaceAnalysis by remember { mutableStateOf<FaceAnalysisResult?>(null) }
     var referenceEmbedding by remember { mutableStateOf<FaceEmbedding?>(null) }
     var livenessState by remember { mutableStateOf(LivenessState.NotStarted) }
+    var referenceSavedMessageVisible by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -190,9 +182,27 @@ private fun CameraPreviewCard() {
                 onSave = {
                     referenceEmbedding = it
                     livenessState = LivenessState.NotStarted
+                    referenceSavedMessageVisible = true
                 }
             )
+            if (referenceSavedMessageVisible) {
+                Spacer(modifier = Modifier.height(8.dp))
 
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                ) {
+                    Text(
+                        text = stringResource(R.string.face_demo_reference_saved),
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(8.dp))
 
             LivenessButton(
@@ -202,7 +212,7 @@ private fun CameraPreviewCard() {
                 }
             )
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             FaceAnalysisPanel(
                 result = faceAnalysis,
@@ -223,9 +233,16 @@ private fun SaveReferenceButton(
     Button(
         onClick = { currentEmbedding?.let(onSave) },
         enabled = canSave,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp)
     ) {
-        Text(text = if (canSave) "Salvează fața de referință" else "Nicio față detectată")
+        Text(
+            text = if (canSave) {
+                stringResource(R.string.face_demo_save_reference_button)
+            } else {
+                stringResource(R.string.face_demo_no_face_detected)
+            }
+        )
     }
 }
 
@@ -236,13 +253,18 @@ private fun LivenessButton(
 ) {
     Button(
         onClick = onStart,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.primary
+        )
     ) {
         Text(
             text = when (livenessState) {
-                LivenessState.NotStarted -> "Începe verificarea liveness"
-                LivenessState.Verified -> "Reia verificarea liveness"
-                else -> "Repornește verificarea liveness"
+                LivenessState.NotStarted -> stringResource(R.string.face_demo_liveness_start)
+                LivenessState.Verified -> stringResource(R.string.face_demo_liveness_retry)
+                else -> stringResource(R.string.face_demo_liveness_restart)
             }
         )
     }
@@ -258,65 +280,51 @@ private fun FaceAnalysisPanel(
     val facePoseValid = result.isFacePoseValidForRecognition()
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Text(
             text = stringResource(R.string.face_demo_analysis_title),
             style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
-        Text(
-            text = stringResource(R.string.face_demo_faces_detected, result.faceCount),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+        AnalysisRow(
+            label = stringResource(R.string.face_demo_faces_detected_label),
+            value = result.faceCount.toString()
         )
 
-        Text(
-            text = stringResource(
-                R.string.face_demo_smile_probability,
-                result.smileProbability.formatPercentOrUnavailable(unavailable)
-            ),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+        AnalysisRow(
+            label = stringResource(R.string.face_demo_smile_probability_label),
+            value = result.smileProbability.formatPercentOrUnavailable(unavailable)
         )
 
-        Text(
-            text = stringResource(
-                R.string.face_demo_left_eye_probability,
-                result.leftEyeOpenProbability.formatPercentOrUnavailable(unavailable)
-            ),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+        AnalysisRow(
+            label = stringResource(R.string.face_demo_left_eye_probability_label),
+            value = result.leftEyeOpenProbability.formatPercentOrUnavailable(unavailable)
         )
 
-        Text(
-            text = stringResource(
-                R.string.face_demo_right_eye_probability,
-                result.rightEyeOpenProbability.formatPercentOrUnavailable(unavailable)
-            ),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+        AnalysisRow(
+            label = stringResource(R.string.face_demo_right_eye_probability_label),
+            value = result.rightEyeOpenProbability.formatPercentOrUnavailable(unavailable)
         )
 
-        Text(
-            text = stringResource(
-                R.string.face_demo_head_angle,
-                result.headEulerAngleX.formatAngleOrUnavailable(unavailable),
-                result.headEulerAngleY.formatAngleOrUnavailable(unavailable),
-                result.headEulerAngleZ.formatAngleOrUnavailable(unavailable)
-            ),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+        AnalysisRow(
+            label = stringResource(R.string.face_demo_head_angle_label),
+            value = "X ${result.headEulerAngleX.formatAngleOrUnavailable(unavailable)} / " +
+                    "Y ${result.headEulerAngleY.formatAngleOrUnavailable(unavailable)} / " +
+                    "Z ${result.headEulerAngleZ.formatAngleOrUnavailable(unavailable)}"
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         Text(
             text = livenessState.statusText(),
             style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold,
             color = when (livenessState) {
                 LivenessState.Verified -> MaterialTheme.colorScheme.primary
                 LivenessState.NotStarted -> MaterialTheme.colorScheme.onSurfaceVariant
@@ -324,17 +332,23 @@ private fun FaceAnalysisPanel(
             }
         )
 
-        Spacer(modifier = Modifier.height(6.dp))
-
         val matchText = when {
-            referenceEmbedding == null -> "Referință FaceNet lipsă"
-            result.embedding == null -> "Embedding facial indisponibil"
-            !facePoseValid -> "Poziționează fața frontal pentru recunoaștere"
-            livenessState != LivenessState.Verified -> "Finalizează verificarea liveness înainte de potrivire"
+            referenceEmbedding == null -> stringResource(R.string.face_demo_reference_missing)
+            result.embedding == null -> stringResource(R.string.face_demo_embedding_unavailable)
+            !facePoseValid -> stringResource(R.string.face_demo_position_face_front)
+            livenessState != LivenessState.Verified -> {
+                stringResource(R.string.face_demo_complete_liveness_first)
+            }
             else -> {
                 val score = result.embedding.cosineSimilarity(referenceEmbedding)
+                val scorePercent = (score * 100).roundToInt()
                 val match = score >= FACE_NET_MATCH_THRESHOLD
-                "Similaritate FaceNet: ${(score * 100).roundToInt()}% — ${if (match) "✓ Potrivire" else "✗ Nepotrivire"}"
+
+                if (match) {
+                    stringResource(R.string.face_demo_similarity_match, scorePercent)
+                } else {
+                    stringResource(R.string.face_demo_similarity_no_match, scorePercent)
+                }
             }
         }
 
@@ -346,10 +360,38 @@ private fun FaceAnalysisPanel(
                 result.embedding == null -> MaterialTheme.colorScheme.error
                 !facePoseValid -> MaterialTheme.colorScheme.tertiary
                 livenessState != LivenessState.Verified -> MaterialTheme.colorScheme.tertiary
-                result.embedding.cosineSimilarity(referenceEmbedding) >= FACE_NET_MATCH_THRESHOLD ->
+                result.embedding.cosineSimilarity(referenceEmbedding) >= FACE_NET_MATCH_THRESHOLD -> {
                     MaterialTheme.colorScheme.primary
+                }
                 else -> MaterialTheme.colorScheme.error
             }
+        )
+    }
+}
+
+@Composable
+private fun AnalysisRow(
+    label: String,
+    value: String,
+    valueColor: Color = MaterialTheme.colorScheme.onSurfaceVariant
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            text = label,
+            modifier = Modifier.weight(0.9f),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            text = value,
+            modifier = Modifier.weight(1.35f),
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = valueColor,
+            textAlign = androidx.compose.ui.text.style.TextAlign.End
         )
     }
 }
@@ -364,39 +406,43 @@ private fun LivenessState.next(result: FaceAnalysisResult): LivenessState {
     }
 
     return when (this) {
-        LivenessState.WaitingForOpenEyes ->
+        LivenessState.WaitingForOpenEyes -> {
             if (result.areEyesOpenForLiveness()) {
                 LivenessState.WaitingForBlink
             } else {
                 this
             }
+        }
 
-        LivenessState.WaitingForBlink ->
+        LivenessState.WaitingForBlink -> {
             if (result.areEyesClosedForLiveness()) {
                 LivenessState.WaitingForEyesOpenAgain
             } else {
                 this
             }
+        }
 
-        LivenessState.WaitingForEyesOpenAgain ->
+        LivenessState.WaitingForEyesOpenAgain -> {
             if (result.areEyesOpenForLiveness()) {
                 LivenessState.Verified
             } else {
                 this
             }
+        }
 
         LivenessState.NotStarted,
         LivenessState.Verified -> this
     }
 }
 
+@Composable
 private fun LivenessState.statusText(): String {
     return when (this) {
-        LivenessState.NotStarted -> "Liveness: verificare neîncepută"
-        LivenessState.WaitingForOpenEyes -> "Liveness: privește frontal, cu ochii deschiși"
-        LivenessState.WaitingForBlink -> "Liveness: clipește o dată"
-        LivenessState.WaitingForEyesOpenAgain -> "Liveness: deschide ochii din nou"
-        LivenessState.Verified -> "Liveness verificat"
+        LivenessState.NotStarted -> stringResource(R.string.face_demo_liveness_not_started)
+        LivenessState.WaitingForOpenEyes -> stringResource(R.string.face_demo_liveness_open_eyes)
+        LivenessState.WaitingForBlink -> stringResource(R.string.face_demo_liveness_blink)
+        LivenessState.WaitingForEyesOpenAgain -> stringResource(R.string.face_demo_liveness_open_again)
+        LivenessState.Verified -> stringResource(R.string.face_demo_liveness_verified)
     }
 }
 
@@ -455,7 +501,7 @@ private fun CameraPermissionCard(
                 color = MaterialTheme.colorScheme.onSurface
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             Text(
                 text = stringResource(R.string.face_demo_camera_permission_body),
@@ -477,7 +523,8 @@ private fun CameraPermissionCard(
 
             Button(
                 onClick = onRequestPermission,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(8.dp)
             ) {
                 Text(text = stringResource(R.string.face_demo_camera_permission_button))
             }

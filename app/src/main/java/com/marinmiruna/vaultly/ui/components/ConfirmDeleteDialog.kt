@@ -15,7 +15,7 @@ fun ConfirmDeleteDialog(
     confirmText: String? = null,
     dismissText: String? = null,
     onConfirm: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     val resolvedConfirmText = confirmText ?: stringResource(R.string.common_delete)
     val resolvedDismissText = dismissText ?: stringResource(R.string.common_cancel)

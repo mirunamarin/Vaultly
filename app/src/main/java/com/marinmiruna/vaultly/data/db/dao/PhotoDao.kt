@@ -22,6 +22,9 @@ interface PhotoDao {
     @Query("SELECT encryptedFilePath FROM photos")
     suspend fun getAllEncryptedFilePaths(): List<String>
 
+    @Query("SELECT EXISTS(SELECT 1 FROM photos WHERE contentHash = :contentHash)")
+    suspend fun existsByContentHash(contentHash: String): Boolean
+
     @Upsert
     suspend fun upsert(photo: PhotoEntity): Long
 

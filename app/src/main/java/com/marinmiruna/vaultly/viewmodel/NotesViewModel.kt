@@ -91,7 +91,9 @@ class NotesViewModel @Inject constructor(
                         id = note.id,
                         title = note.title,
                         content = note.content,
-                        canDelete = true
+                        canDelete = true,
+                        originalTitle = note.title,
+                        originalContent = note.content
                     )
                 }
             }
@@ -179,5 +181,10 @@ data class NoteDetailUiState(
     val title: String = "",
     val content: String = "",
     val canDelete: Boolean = false,
-    val errorMessage: String? = null
-)
+    val errorMessage: String? = null,
+    val originalTitle: String = "",
+    val originalContent: String = ""
+) {
+    val hasUnsavedChanges: Boolean
+        get() = title != originalTitle || content != originalContent
+}

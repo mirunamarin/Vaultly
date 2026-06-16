@@ -183,6 +183,30 @@ class PhotosViewModel @Inject constructor(
         }
     }
 
+    fun deletePhotos(
+        photos: List<PhotoItem>,
+        onDeleted: () -> Unit
+    ) {
+        if (photos.isEmpty()) {
+            return
+        }
+
+        viewModelScope.launch {
+            runCatching {
+                photos.forEach { photo ->
+                    photoRepository.deletePhoto(photo)
+                }
+            }.onSuccess {
+                onDeleted()
+            }.onFailure { exception ->
+                errorMessage.value = UserMessageMapper.photoOperationMessage(
+                    context = application,
+                    exception = exception
+                )
+            }
+        }
+    }
+
     fun clearErrorMessage() {
         errorMessage.value = null
     }

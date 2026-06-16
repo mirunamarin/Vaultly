@@ -10,7 +10,7 @@
     <string name="biometric_subtitle_files">Confirm your identity to access files</string>
     <string name="biometric_subtitle_photos">Confirm your identity to access photos</string>
     <string name="biometric_subtitle_export">Confirm your identity to export Vaultly data</string>
-    <string name="biometric_negative_exit">Exit app</string>
+    <string name="biometric_negative_exit">Exit</string>
     <string name="biometric_negative_cancel">Cancel</string>
     <string name="biometric_no_hardware">This device does not have biometric hardware available.</string>
     <string name="biometric_hw_unavailable">Biometric hardware is currently unavailable.</string>
@@ -112,23 +112,25 @@
     <string name="lock_unlock_button">Unlock with your biometrics</string>
     <string name="lock_footer">Your data stays private and protected</string>
 
-    <string name="home_subtitle">Your biometric-secured digital vault</string>
+    <string name="home_subtitle">Biometric-secured digital vault</string>
     <string name="home_settings_button">Settings</string>
     <string name="home_modules_title">Modules</string>
     <string name="home_protection_title">Active protection</string>
-    <string name="home_protection_body">Screenshots are blocked, the database is encrypted, and sensitive sections require separate biometric authentication.</string>
+    <string name="home_protection_body">Encrypted data, biometric access and blocked screenshots.</string>
+
     <string name="home_module_notes_title">Notes</string>
-    <string name="home_module_notes_description">Private text encrypted in the database</string>
-    <string name="home_module_notes_marker">N</string>
+    <string name="home_module_notes_description">Encrypted notes</string>
+
     <string name="home_module_passwords_title">Passwords</string>
-    <string name="home_module_passwords_description">Password manager with re-authentication</string>
-    <string name="home_module_passwords_marker">P</string>
+    <string name="home_module_passwords_description">Password vault</string>
+
     <string name="home_module_photos_title">Photos</string>
-    <string name="home_module_photos_description">Private gallery encrypted locally</string>
-    <string name="home_module_photos_marker">P</string>
+    <string name="home_module_photos_description">Encrypted gallery</string>
+
     <string name="home_module_files_title">Files</string>
-    <string name="home_module_files_description">Documents encrypted in internal storage</string>
-    <string name="home_module_files_marker">F</string>
+    <string name="home_module_files_description">Encrypted documents</string>
+
+    <string name="face_demo_module_description">Local face analysis</string>
 
     <string name="settings_title">Settings</string>
     <string name="settings_security_title">Active security</string>
@@ -188,6 +190,7 @@
     <string name="file_error_invalid_name">The selected file does not have a valid name.</string>
     <string name="file_error_empty">The selected file is empty.</string>
     <string name="file_error_too_large">The selected file exceeds the 100 MB limit.</string>
+    <string name="file_error_invalid_type">The selected file is not a supported document.</string>
 
     <string name="photo_error_cannot_read">The selected photo cannot be read.</string>
     <string name="photo_error_cannot_process">The selected photo cannot be processed.</string>
@@ -213,12 +216,9 @@
 
     <string name="export_error_unsupported_version">The export version is not supported.</string>
 
-    <string name="face_demo_title">Face recognition demo</string>
+    <string name="face_demo_title">Face recognition</string>
     <string name="face_demo_module_title">Face demo</string>
-    <string name="face_demo_module_description">Real-time facial analysis for research</string>
-    <string name="face_demo_subtitle">Local demo module for facial detection, analysis, and recognition.</string>
-    <string name="face_demo_placeholder_title">Facial recognition research module</string>
-    <string name="face_demo_placeholder_body">This section will demonstrate face detection, facial landmarks and biometric analysis in real time.</string>
+    <string name="face_demo_subtitle">Local face detection, analysis and liveness check.</string>
 
     <string name="face_demo_camera_permission_title">Camera access required</string>
     <string name="face_demo_camera_permission_body">Vaultly needs camera access to run the facial recognition research demo.</string>
@@ -226,11 +226,62 @@
     <string name="face_demo_camera_permission_denied">Camera permission was denied. The demo cannot run without camera access.</string>
 
     <string name="face_demo_analysis_title">Live facial analysis</string>
-    <string name="face_demo_faces_detected">Faces detected: %1$d</string>
-    <string name="face_demo_smile_probability">Smile probability: %1$s</string>
-    <string name="face_demo_left_eye_probability">Left eye open: %1$s</string>
-    <string name="face_demo_right_eye_probability">Right eye open: %1$s</string>
-    <string name="face_demo_head_angle">Head angle: X %1$s / Y %2$s / Z %3$s</string>
     <string name="face_demo_value_unavailable">Unavailable</string>
+
+    <string name="file_error_duplicate">This file is already saved in Vaultly.</string>
+    <string name="photo_error_duplicate">This photo is already saved in Vaultly.</string>
+
+    <string name="discard_changes_dialog_title">Discard changes?</string>
+    <string name="discard_changes_dialog_message">You have unsaved changes. If you go back now, they will be lost.</string>
+
+    <string name="discard_changes_confirm">Discard</string>
+
+    <string name="import_exit_dialog_title">Import in progress</string>
+    <string name="import_exit_dialog_message">Please wait until the import is complete before leaving this module.</string>
+    <string name="import_exit_dialog_confirm">OK</string>
+
+    <string name="theme_mode_title">Appearance</string>
+    <string name="theme_mode_system">System</string>
+    <string name="theme_mode_light">Light</string>
+    <string name="theme_mode_dark">Dark</string>
+
+    <string name="selection_count_format">%1$d selected</string>
+
+    <string name="photos_delete_selected_dialog_title">Delete selected photos?</string>
+    <string name="photos_delete_selected_dialog_message">The selected encrypted photos will be permanently deleted.</string>
+
+    <string name="files_delete_selected_dialog_title">Delete selected files?</string>
+    <string name="files_delete_selected_dialog_message">The selected encrypted files will be permanently deleted.</string>
+
+    <string name="password_validation_service_required">Complete the service.</string>
+    <string name="password_validation_username_required">Complete the username.</string>
+    <string name="password_validation_password_required">Complete the password.</string>
+
+    <string name="face_demo_save_reference_button">Save reference face</string>
+    <string name="face_demo_no_face_detected">No face detected</string>
+    <string name="face_demo_liveness_start">Start liveness check</string>
+    <string name="face_demo_liveness_retry">Retry liveness check</string>
+    <string name="face_demo_liveness_restart">Restart liveness check</string>
+
+    <string name="face_demo_reference_missing">FaceNet reference missing</string>
+    <string name="face_demo_embedding_unavailable">Face embedding unavailable</string>
+    <string name="face_demo_position_face_front">Position your face frontally for recognition</string>
+    <string name="face_demo_complete_liveness_first">Complete the liveness check before matching</string>
+    <string name="face_demo_similarity_match">FaceNet similarity: %1$d%% - Match</string>
+    <string name="face_demo_similarity_no_match">FaceNet similarity: %1$d%% - No match</string>
+
+    <string name="face_demo_liveness_not_started">Liveness: not started</string>
+    <string name="face_demo_liveness_open_eyes">Liveness: look straight ahead with eyes open</string>
+    <string name="face_demo_liveness_blink">Liveness: blink once</string>
+    <string name="face_demo_liveness_open_again">Liveness: open your eyes again</string>
+    <string name="face_demo_liveness_verified">Liveness verified</string>
+
+    <string name="face_demo_faces_detected_label">Detected faces</string>
+    <string name="face_demo_smile_probability_label">Smile</string>
+    <string name="face_demo_left_eye_probability_label">Left eye</string>
+    <string name="face_demo_right_eye_probability_label">Right eye</string>
+    <string name="face_demo_head_angle_label">Head angle</string>
+
+    <string name="face_demo_reference_saved">Reference face saved.</string>
 
 </resources>

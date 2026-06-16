@@ -5,6 +5,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,7 +24,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
@@ -36,8 +36,10 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.marinmiruna.vaultly.R
+import com.marinmiruna.vaultly.ui.components.HeaderButton
 
 @Composable
 fun HomeScreen(
@@ -92,7 +94,7 @@ fun HomeScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 24.dp)
         ) {
-            androidx.compose.foundation.layout.Row(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
@@ -115,12 +117,10 @@ fun HomeScreen(
                     )
                 }
 
-                TextButton(onClick = onOpenSettings) {
-                    Text(
-                        text = stringResource(R.string.home_settings_button),
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                }
+                HeaderButton(
+                    text = stringResource(R.string.home_settings_button),
+                    onClick = onOpenSettings
+                )
             }
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -203,7 +203,7 @@ private fun VaultModuleCard(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Surface(
                 modifier = Modifier.size(36.dp),
@@ -218,7 +218,9 @@ private fun VaultModuleCard(
                 )
             }
 
-            Column {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
                 Text(
                     text = module.title,
                     style = MaterialTheme.typography.titleMedium,
@@ -227,9 +229,10 @@ private fun VaultModuleCard(
 
                 Text(
                     text = module.description,
-                    modifier = Modifier.padding(top = 6.dp),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }

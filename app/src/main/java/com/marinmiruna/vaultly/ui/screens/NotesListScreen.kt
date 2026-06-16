@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,15 +16,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,7 +29,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.marinmiruna.vaultly.R
 import com.marinmiruna.vaultly.domain.model.Note
+import com.marinmiruna.vaultly.ui.components.ScreenHeader
 import com.marinmiruna.vaultly.viewmodel.NotesViewModel
+import com.marinmiruna.vaultly.ui.components.VaultlyTextField
 
 @Composable
 fun NotesListScreen(
@@ -73,50 +70,16 @@ fun NotesListScreen(
                     .fillMaxSize()
                     .padding(horizontal = 24.dp, vertical = 24.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Text(
-                        text = stringResource(R.string.notes_title),
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-
-                    TextButton(onClick = onBack) {
-                        Text(
-                            text = stringResource(R.string.common_back),
-                            style = MaterialTheme.typography.labelLarge
-                        )
-                    }
-                }
-
-                OutlinedTextField(
+                ScreenHeader(
+                    title = stringResource(R.string.notes_title),
+                    onBack = onBack
+                )
+                VaultlyTextField(
                     value = uiState.searchQuery,
                     onValueChange = viewModel::onSearchQueryChange,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 20.dp),
-                    singleLine = true,
-                    shape = RoundedCornerShape(8.dp),
-                    label = {
-                        Text(text = stringResource(R.string.notes_search_label))
-                    },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-                        focusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
-                        focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        cursorColor = MaterialTheme.colorScheme.primary
-                    )
+                    label = stringResource(R.string.notes_search_label),
+                    modifier = Modifier.padding(top = 20.dp)
                 )
-
                 if (uiState.notes.isEmpty()) {
                     EmptyNotesState(
                         modifier = Modifier
@@ -137,7 +100,6 @@ fun NotesListScreen(
                         ) { note ->
                             NoteCard(
                                 note = note,
-                                emptyContentText = stringResource(R.string.notes_no_content),
                                 onClick = { onOpenNote(note.id) }
                             )
                         }
@@ -151,7 +113,6 @@ fun NotesListScreen(
 @Composable
 private fun NoteCard(
     note: Note,
-    emptyContentText: String,
     onClick: () -> Unit
 ) {
     Card(
@@ -176,13 +137,6 @@ private fun NoteCard(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface
-            )
-
-            Text(
-                text = note.content.ifBlank { emptyContentText },
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 3
             )
         }
     }
@@ -213,7 +167,6 @@ private fun EmptyNotesState(
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface
             )
-
             Text(
                 text = stringResource(R.string.notes_empty_message),
                 style = MaterialTheme.typography.bodyMedium,

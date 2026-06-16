@@ -18,7 +18,7 @@ import com.marinmiruna.vaultly.data.db.entity.PhotoEntity
         PhotoEntity::class,
         FileEntity::class
     ],
-    version = 3,
+    version = 5,
     exportSchema = true
 )
 abstract class VaultlyDatabase : RoomDatabase() {

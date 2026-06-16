@@ -3,9 +3,12 @@ package com.marinmiruna.vaultly.ui.theme
 import android.os.Build
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
 
 private val VaultlyDarkColorScheme = darkColorScheme(
     primary = VaultlyPrimary,
@@ -35,6 +38,34 @@ private val VaultlyDarkColorScheme = darkColorScheme(
     onTertiary = VaultlyTextPrimary
 )
 
+private val VaultlyLightColorScheme = lightColorScheme(
+    primary = VaultlyLightPrimary,
+    onPrimary = Color.White,
+    primaryContainer = VaultlyLightPrimarySoft,
+    onPrimaryContainer = VaultlyLightTextPrimary,
+
+    secondary = VaultlyLightTextSecondary,
+    onSecondary = Color.White,
+
+    background = VaultlyLightBackground,
+    onBackground = VaultlyLightTextPrimary,
+
+    surface = VaultlyLightSurface,
+    onSurface = VaultlyLightTextPrimary,
+
+    surfaceVariant = VaultlyLightSurfaceVariant,
+    onSurfaceVariant = VaultlyLightTextSecondary,
+
+    error = VaultlyLightDanger,
+    onError = Color.White,
+
+    outline = VaultlyLightBorder,
+    outlineVariant = VaultlyLightBorderSubtle,
+
+    tertiary = VaultlyLightSuccess,
+    onTertiary = Color.White
+)
+
 @Composable
 fun VaultlyTheme(
     darkTheme: Boolean = true,
@@ -42,14 +73,18 @@ fun VaultlyTheme(
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
-    val colorScheme = if (
-        dynamicColor &&
-        darkTheme &&
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-    ) {
-        dynamicDarkColorScheme(context)
-    } else {
-        VaultlyDarkColorScheme
+    val colorScheme = when {
+        dynamicColor && darkTheme && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            dynamicDarkColorScheme(context)
+        }
+
+        dynamicColor && !darkTheme && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            dynamicLightColorScheme(context)
+        }
+
+        darkTheme -> VaultlyDarkColorScheme
+
+        else -> VaultlyLightColorScheme
     }
 
     MaterialTheme(

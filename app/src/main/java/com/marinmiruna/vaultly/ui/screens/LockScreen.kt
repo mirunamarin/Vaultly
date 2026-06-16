@@ -35,11 +35,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.marinmiruna.vaultly.R
 import com.marinmiruna.vaultly.ui.components.BiometricButton
+import com.marinmiruna.vaultly.ui.components.HeaderButton
 
 @Composable
 fun LockScreen(
     statusMessage: String,
-    onUnlockClick: () -> Unit
+    onUnlockClick: () -> Unit,
+    onExitClick: () -> Unit
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -49,9 +51,20 @@ fun LockScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .safeDrawingPadding()
-                .padding(horizontal = 28.dp, vertical = 28.dp),
+                .padding(horizontal = 28.dp, vertical = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                HeaderButton(
+                    text = stringResource(R.string.biometric_negative_exit),
+                    onClick = onExitClick
+                )
+            }
+
             Spacer(modifier = Modifier.weight(1.1f))
 
             SecurityMark(
@@ -82,7 +95,6 @@ fun LockScreen(
 
             BiometricButton(
                 text = stringResource(R.string.lock_unlock_button),
-                modifier = Modifier.fillMaxWidth(),
                 onAuthenticateClick = onUnlockClick
             )
 

@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.widthIn
 
 @Composable
 fun BiometricButton(
@@ -23,7 +24,7 @@ fun BiometricButton(
         onClick = onAuthenticateClick,
         enabled = enabled,
         modifier = modifier
-            .fillMaxWidth()
+            .widthIn(min = 220.dp, max = 300.dp)
             .defaultMinSize(minHeight = 52.dp),
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(

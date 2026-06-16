@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import java.security.MessageDigest
 
 @Singleton
 class PhotoRepository @Inject constructor(
@@ -50,6 +51,12 @@ class PhotoRepository @Inject constructor(
         )
 
         val sourceBytes = readSourceBytes(sourceUri)
+
+        val contentHash = calculateContentHash(sourceBytes)
+
+        require(!photoDao.existsByContentHash(contentHash)) {
+            context.getString(R.string.photo_error_duplicate)
+        }
 
         val encryptedFile = fileEncryptor.encryptBytesToInternalFile(
             plainBytes = sourceBytes,
@@ -89,7 +96,8 @@ class PhotoRepository @Inject constructor(
                 previewEncryptedFilePath = encryptedPreview.absolutePath,
                 mimeType = mimeType,
                 sizeBytes = encryptedFile.sizeBytes,
-                importedAt = System.currentTimeMillis()
+                importedAt = System.currentTimeMillis(),
+                contentHash = contentHash
             )
         )
     }
@@ -201,7 +209,8 @@ class PhotoRepository @Inject constructor(
             previewEncryptedFilePath = previewEncryptedFilePath,
             mimeType = mimeType,
             sizeBytes = sizeBytes,
-            importedAt = importedAt
+            importedAt = importedAt,
+            contentHash = contentHash
         )
     }
 
@@ -214,7 +223,8 @@ class PhotoRepository @Inject constructor(
             previewEncryptedFilePath = previewEncryptedFilePath,
             mimeType = mimeType,
             sizeBytes = sizeBytes,
-            importedAt = importedAt
+            importedAt = importedAt,
+            contentHash = contentHash
         )
     }
 
@@ -261,6 +271,14 @@ class PhotoRepository @Inject constructor(
         return context.contentResolver.openAssetFileDescriptor(sourceUri, "r")?.use { descriptor ->
             descriptor.length
         } ?: -1L
+    }
+
+    private fun calculateContentHash(bytes: ByteArray): String {
+        val digest = MessageDigest.getInstance("SHA-256").digest(bytes)
+
+        return digest.joinToString(separator = "") { byte ->
+            "%02x".format(byte)
+        }
     }
 
     companion object {

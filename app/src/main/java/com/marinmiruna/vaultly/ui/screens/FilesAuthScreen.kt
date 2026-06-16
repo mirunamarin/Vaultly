@@ -14,6 +14,7 @@ import com.marinmiruna.vaultly.R
 fun FilesAuthScreen(
     onAuthenticateClick: () -> Unit,
     onAuthenticated: () -> Unit,
+    onBack: () -> Unit,
     viewModel: FilesViewModel = hiltViewModel()
 ) {
     val authState by viewModel.authState.collectAsStateWithLifecycle()
@@ -25,6 +26,8 @@ fun FilesAuthScreen(
     LaunchedEffect(authState.isAuthenticated) {
         if (authState.isAuthenticated) {
             onAuthenticated()
+        } else {
+            onAuthenticateClick()
         }
     }
 
@@ -33,6 +36,7 @@ fun FilesAuthScreen(
         title = stringResource(R.string.files_auth_title),
         message = stringResource(R.string.files_auth_message),
         buttonText = stringResource(R.string.files_auth_button),
+        onBack = onBack,
         onAuthenticateClick = onAuthenticateClick
     ) {
         Unit

@@ -19,6 +19,7 @@ import com.marinmiruna.vaultly.ui.screens.PhotoViewerScreen
 import com.marinmiruna.vaultly.ui.screens.PhotosGridScreen
 import com.marinmiruna.vaultly.ui.screens.SettingsScreen
 import com.marinmiruna.vaultly.ui.screens.PhotosAuthScreen
+import com.marinmiruna.vaultly.ui.theme.ThemeMode
 
 @Composable
 fun VaultlyNavGraph(
@@ -27,7 +28,9 @@ fun VaultlyNavGraph(
     onPasswordsAuthRequested: (onSuccess: () -> Unit) -> Unit = { onSuccess -> onSuccess() },
     onFilesAuthRequested: (onSuccess: () -> Unit) -> Unit = { onSuccess -> onSuccess() },
     onPhotosAuthRequested: (onSuccess: () -> Unit) -> Unit = { onSuccess -> onSuccess() },
-    onExportAuthRequested: (onSuccess: () -> Unit) -> Unit = { onSuccess -> onSuccess() }
+    onExportAuthRequested: (onSuccess: () -> Unit) -> Unit = { onSuccess -> onSuccess() },
+    themeMode: ThemeMode,
+    onThemeModeChange: (ThemeMode) -> Unit,
 ) {
     val navController = rememberNavController()
 
@@ -91,7 +94,8 @@ fun VaultlyNavGraph(
                             inclusive = true
                         }
                     }
-                }
+                },
+                onBack = { navController.popBackStack() }
             )
         }
 
@@ -150,7 +154,8 @@ fun VaultlyNavGraph(
                             inclusive = true
                         }
                     }
-                }
+                },
+                onBack = { navController.popBackStack() }
             )
         }
 
@@ -197,7 +202,8 @@ fun VaultlyNavGraph(
                             inclusive = true
                         }
                     }
-                }
+                },
+                onBack = { navController.popBackStack() }
             )
         }
 
@@ -210,6 +216,8 @@ fun VaultlyNavGraph(
 
         composable(Routes.Settings.route) {
             SettingsScreen(
+                themeMode = themeMode,
+                onThemeModeChange = onThemeModeChange,
                 onBack = { navController.popBackStack() },
                 onExportAuthRequested = onExportAuthRequested
             )

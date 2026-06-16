@@ -14,6 +14,7 @@ import com.marinmiruna.vaultly.R
 fun PasswordsAuthScreen(
     onAuthenticateClick: () -> Unit,
     onAuthenticated: () -> Unit,
+    onBack: () -> Unit,
     viewModel: PasswordsViewModel = hiltViewModel()
 ) {
     val authState by viewModel.authState.collectAsStateWithLifecycle()
@@ -25,6 +26,8 @@ fun PasswordsAuthScreen(
     LaunchedEffect(authState.isAuthenticated) {
         if (authState.isAuthenticated) {
             onAuthenticated()
+        } else {
+            onAuthenticateClick()
         }
     }
 
@@ -33,7 +36,8 @@ fun PasswordsAuthScreen(
         title = stringResource(R.string.passwords_auth_title),
         message = stringResource(R.string.passwords_auth_message),
         buttonText = stringResource(R.string.passwords_auth_button),
-        onAuthenticateClick = onAuthenticateClick
+        onBack = onBack,
+        onAuthenticateClick = onAuthenticateClick,
     ) {
         Unit
     }

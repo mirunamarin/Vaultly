@@ -7,29 +7,24 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,7 +41,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.marinmiruna.vaultly.R
 import com.marinmiruna.vaultly.domain.model.PasswordListItem
 import com.marinmiruna.vaultly.domain.security.PasswordSecurityReport
+import com.marinmiruna.vaultly.ui.components.ScreenHeader
 import com.marinmiruna.vaultly.viewmodel.PasswordsViewModel
+import com.marinmiruna.vaultly.ui.components.VaultlyTextField
 
 @Composable
 fun PasswordsListScreen(
@@ -91,50 +88,16 @@ fun PasswordsListScreen(
                     .fillMaxSize()
                     .padding(horizontal = 24.dp, vertical = 24.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Text(
-                        text = stringResource(R.string.passwords_title),
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-
-                    TextButton(onClick = onBack) {
-                        Text(
-                            text = stringResource(R.string.common_back),
-                            style = MaterialTheme.typography.labelLarge
-                        )
-                    }
-                }
-
-                OutlinedTextField(
+                ScreenHeader(
+                    title = stringResource(R.string.passwords_title),
+                    onBack = onBack
+                )
+                VaultlyTextField(
                     value = uiState.searchQuery,
                     onValueChange = viewModel::onSearchQueryChange,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 20.dp),
-                    singleLine = true,
-                    shape = RoundedCornerShape(8.dp),
-                    label = {
-                        Text(text = stringResource(R.string.passwords_search_label))
-                    },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-                        focusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
-                        focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        cursorColor = MaterialTheme.colorScheme.primary
-                    )
+                    label = stringResource(R.string.passwords_search_label),
+                    modifier = Modifier.padding(top = 20.dp)
                 )
-
                 if (uiState.passwords.isEmpty()) {
                     EmptyPasswordsState(
                         modifier = Modifier
@@ -176,13 +139,12 @@ private fun PasswordCard(
         service = password.service,
         url = password.url
     )
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
     ) {
-        Row(
+        androidx.compose.foundation.layout.Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 14.dp),
@@ -193,7 +155,6 @@ private fun PasswordCard(
                 identity = serviceIdentity,
                 modifier = Modifier.size(52.dp)
             )
-
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -204,28 +165,25 @@ private fun PasswordCard(
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onBackground
                 )
-
                 Text(
                     text = password.username,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-
             if (securityReport?.isWeak == true || securityReport?.isReused == true) {
                 SecurityIssueBadge()
                 Spacer(modifier = Modifier.width(2.dp))
             }
 
             Text(
-                text = "›",
+                text = ">",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-
-        Divider(
+        HorizontalDivider(
             color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.45f),
             thickness = 1.dp
         )
@@ -338,7 +296,6 @@ private fun EmptyPasswordsState(
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface
             )
-
             Text(
                 text = stringResource(R.string.passwords_empty_message),
                 style = MaterialTheme.typography.bodyMedium,

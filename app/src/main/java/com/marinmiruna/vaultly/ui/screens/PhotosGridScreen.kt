@@ -2,12 +2,14 @@ package com.marinmiruna.vaultly.ui.screens
 
 import android.net.Uri
 import android.provider.OpenableColumns
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -29,10 +31,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -44,7 +48,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.marinmiruna.vaultly.R
 import com.marinmiruna.vaultly.domain.model.PhotoItem
+import com.marinmiruna.vaultly.ui.components.ConfirmDeleteDialog
 import com.marinmiruna.vaultly.ui.components.EncryptedImageLoader
+import com.marinmiruna.vaultly.ui.components.HeaderButton
+import com.marinmiruna.vaultly.ui.components.ScreenHeader
 import com.marinmiruna.vaultly.viewmodel.PhotosViewModel
 
 @Composable
@@ -57,6 +64,24 @@ fun PhotosGridScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
+    var selectedPhotoIds by remember { mutableStateOf<Set<Long>>(emptySet()) }
+    val isSelectionMode = selectedPhotoIds.isNotEmpty()
+
+    fun togglePhotoSelection(photoId: Long) {
+        selectedPhotoIds = if (photoId in selectedPhotoIds) {
+            selectedPhotoIds - photoId
+        } else {
+            selectedPhotoIds + photoId
+        }
+    }
+
+    fun clearSelection() {
+        selectedPhotoIds = emptySet()
+    }
+
+    var showImportExitDialog by remember { mutableStateOf(false) }
+    var showDeleteSelectedDialog by remember { mutableStateOf(false) }
+
     val errorMessage = uiState.errorMessage
     val successMessage = uiState.successMessage
 
@@ -64,6 +89,18 @@ fun PhotosGridScreen(
         if (!viewModel.isPhotosSessionValid()) {
             onBack()
         }
+    }
+
+    fun handleBack() {
+        when {
+            isSelectionMode -> clearSelection()
+            uiState.isImporting -> showImportExitDialog = true
+            else -> onBack()
+        }
+    }
+
+    BackHandler {
+        handleBack()
     }
 
     LaunchedEffect(errorMessage) {
@@ -89,9 +126,9 @@ fun PhotosGridScreen(
     }
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia()
-    ) { uri: Uri? ->
-        if (uri != null) {
+        contract = ActivityResultContracts.GetMultipleContents()
+    ) { uris: List<Uri> ->
+        uris.forEach { uri ->
             val displayName = context.resolveDisplayName(uri)
             val mimeType = context.contentResolver.getType(uri) ?: "image/*"
 
@@ -103,34 +140,71 @@ fun PhotosGridScreen(
         }
     }
 
+    if (showImportExitDialog) {
+        ConfirmDeleteDialog(
+            title = stringResource(R.string.import_exit_dialog_title),
+            message = stringResource(R.string.import_exit_dialog_message),
+            confirmText = stringResource(R.string.import_exit_dialog_confirm),
+            onConfirm = {
+                showImportExitDialog = false
+                onBack()
+            },
+            onDismiss = {
+                showImportExitDialog = false
+            }
+        )
+    }
+
+    if (showDeleteSelectedDialog) {
+        val selectedPhotos = uiState.photos.filter { photo ->
+            photo.id in selectedPhotoIds
+        }
+        ConfirmDeleteDialog(
+            title = stringResource(R.string.photos_delete_selected_dialog_title),
+            message = stringResource(R.string.photos_delete_selected_dialog_message),
+            onConfirm = {
+                showDeleteSelectedDialog = false
+                viewModel.deletePhotos(
+                    photos = selectedPhotos,
+                    onDeleted = {
+                        clearSelection()
+                    }
+                )
+            },
+            onDismiss = {
+                showDeleteSelectedDialog = false
+            }
+        )
+    }
+
     Scaffold(
         modifier = Modifier.safeDrawingPadding(),
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    if (!uiState.isImporting) {
-                        onTrustedSystemActivityStarted()
-                        photoPickerLauncher.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            if (!isSelectionMode) {
+                FloatingActionButton(
+                    onClick = {
+                        if (!uiState.isImporting) {
+                            onTrustedSystemActivityStarted()
+                            photoPickerLauncher.launch("image/*")
+                        }
+                    },
+                    shape = RoundedCornerShape(8.dp),
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ) {
+                    if (uiState.isImporting) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(22.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
+                        Text(
+                            text = "+",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
-                },
-                shape = RoundedCornerShape(8.dp),
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ) {
-                if (uiState.isImporting) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(22.dp),
-                        strokeWidth = 2.dp,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                } else {
-                    Text(
-                        text = "+",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
-                    )
                 }
             }
         },
@@ -147,26 +221,35 @@ fun PhotosGridScreen(
                     .fillMaxSize()
                     .padding(horizontal = 24.dp, vertical = 24.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Text(
-                        text = stringResource(R.string.photos_title),
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-
-                    TextButton(onClick = onBack) {
-                        Text(
+                ScreenHeader(
+                    title = if (isSelectionMode) {
+                        stringResource(R.string.selection_count_format, selectedPhotoIds.size)
+                    } else {
+                        stringResource(R.string.photos_title)
+                    },
+                    titleStyle = if (isSelectionMode) {
+                        MaterialTheme.typography.titleLarge
+                    } else {
+                        MaterialTheme.typography.headlineMedium
+                    },
+                    onBack = { handleBack() },
+                    actions = {
+                        if (isSelectionMode) {
+                            HeaderButton(
+                                text = stringResource(R.string.common_delete),
+                                onClick = {
+                                    showDeleteSelectedDialog = true
+                                },
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onError
+                            )
+                        }
+                        HeaderButton(
                             text = stringResource(R.string.common_back),
-                            style = MaterialTheme.typography.labelLarge
+                            onClick = { handleBack() }
                         )
                     }
-                }
-
+                )
                 if (uiState.isImporting) {
                     Row(
                         modifier = Modifier
@@ -180,7 +263,6 @@ fun PhotosGridScreen(
                             strokeWidth = 2.dp,
                             color = MaterialTheme.colorScheme.primary
                         )
-
                         Text(
                             text = stringResource(R.string.photos_importing),
                             style = MaterialTheme.typography.bodyMedium,
@@ -188,7 +270,6 @@ fun PhotosGridScreen(
                         )
                     }
                 }
-
                 if (uiState.photos.isEmpty()) {
                     EmptyPhotosState(
                         modifier = Modifier
@@ -200,7 +281,7 @@ fun PhotosGridScreen(
                         columns = GridCells.Fixed(3),
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(top = 20.dp),
+                            .padding(top = 32.dp),
                         contentPadding = PaddingValues(bottom = 96.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -214,8 +295,16 @@ fun PhotosGridScreen(
                                 decryptImage = {
                                     viewModel.decryptPhotoThumbnail(photo)
                                 },
+                                isSelected = photo.id in selectedPhotoIds,
                                 onClick = {
-                                    onOpenPhoto(photo.id)
+                                    if (isSelectionMode) {
+                                        togglePhotoSelection(photo.id)
+                                    } else {
+                                        onOpenPhoto(photo.id)
+                                    }
+                                },
+                                onLongClick = {
+                                    togglePhotoSelection(photo.id)
                                 }
                             )
                         }
@@ -226,36 +315,65 @@ fun PhotosGridScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PhotoTile(
     photo: PhotoItem,
     decryptImage: suspend () -> ByteArray,
-    onClick: () -> Unit
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f)
-            .clickable(onClick = onClick),
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            ),
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(
-            width = 1.dp,
-            color = MaterialTheme.colorScheme.outlineVariant
+            width = if (isSelected) 2.dp else 1.dp,
+            color = if (isSelected) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.outlineVariant
+            }
         ),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
-        EncryptedImageLoader(
-            encryptedFilePath = photo.thumbnailEncryptedFilePath,
-            contentDescription = photo.displayName,
-            decryptImage = {
-                decryptImage()
-            },
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop,
-            targetSizePx = 320
-        )
+        Box(modifier = Modifier.fillMaxSize()) {
+            EncryptedImageLoader(
+                encryptedFilePath = photo.thumbnailEncryptedFilePath,
+                contentDescription = photo.displayName,
+                decryptImage = {
+                    decryptImage()
+                },
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
+                targetSizePx = 320
+            )
+            if (isSelected) {
+                Surface(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(6.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ) {
+                    Text(
+                        text = "✓",
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -284,7 +402,6 @@ private fun EmptyPhotosState(
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface
             )
-
             Text(
                 text = stringResource(R.string.photos_empty_message),
                 style = MaterialTheme.typography.bodyMedium,

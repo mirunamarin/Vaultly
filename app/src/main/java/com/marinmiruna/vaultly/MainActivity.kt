@@ -35,6 +35,10 @@ import com.marinmiruna.vaultly.data.crypto.VaultDatabaseKeyException
 import com.marinmiruna.vaultly.data.sharing.DecryptedFileSharer
 import com.marinmiruna.vaultly.data.maintenance.EncryptedStorageCleaner
 import com.marinmiruna.vaultly.data.security.SecureClipboardManager
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.isSystemInDarkTheme
+import com.marinmiruna.vaultly.ui.theme.ThemeMode
+import android.content.Context
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
@@ -50,6 +54,8 @@ class MainActivity : FragmentActivity() {
 
     private var isUnlocked by mutableStateOf(false)
     private var statusMessage by mutableStateOf("")
+
+    private var themeMode by mutableStateOf(ThemeMode.System)
 
     private var unlockedAt: Long = 0L
     private var isStartingTrustedSystemActivity = false
@@ -74,10 +80,23 @@ class MainActivity : FragmentActivity() {
             WindowManager.LayoutParams.FLAG_SECURE
         )
 
+        themeMode = loadThemeMode()
+
         setContent {
-            VaultlyTheme {
+            val systemDarkTheme = isSystemInDarkTheme()
+            val useDarkTheme = when (themeMode) {
+                ThemeMode.System -> systemDarkTheme
+                ThemeMode.Light -> false
+                ThemeMode.Dark -> true
+            }
+            VaultlyTheme(darkTheme = useDarkTheme) {
                 if (isUnlocked) {
                     UnlockedScreen(
+                        themeMode = themeMode,
+                        onThemeModeChange = { mode ->
+                            themeMode = mode
+                            saveThemeMode(mode)
+                        },
                         onTrustedSystemActivityStarted = {
                             markTrustedSystemActivityStarted()
                         },
@@ -119,10 +138,17 @@ class MainActivity : FragmentActivity() {
                         }
                     )
                 } else {
+                    BackHandler(enabled = true) {
+                        finish()
+                    }
+
                     LockScreen(
                         statusMessage = statusMessage,
                         onUnlockClick = {
                             authenticateForInitialUnlock()
+                        },
+                        onExitClick = {
+                            finish()
                         }
                     )
                 }
@@ -358,8 +384,26 @@ class MainActivity : FragmentActivity() {
         }
     }
 
+    private fun loadThemeMode(): ThemeMode {
+        val preferences = getSharedPreferences(THEME_PREFERENCES_NAME, Context.MODE_PRIVATE)
+        val savedValue = preferences.getString(THEME_MODE_KEY, ThemeMode.System.name)
+
+        return runCatching {
+            ThemeMode.valueOf(savedValue ?: ThemeMode.System.name)
+        }.getOrDefault(ThemeMode.System)
+    }
+
+    private fun saveThemeMode(mode: ThemeMode) {
+        getSharedPreferences(THEME_PREFERENCES_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(THEME_MODE_KEY, mode.name)
+            .apply()
+    }
+
     companion object {
         private const val TAG = "VaultlyMainActivity"
         private const val APP_RELOCK_TIMEOUT_MILLIS = 30_000L
+        private const val THEME_PREFERENCES_NAME = "theme_preferences"
+        private const val THEME_MODE_KEY = "theme_mode"
     }
 }

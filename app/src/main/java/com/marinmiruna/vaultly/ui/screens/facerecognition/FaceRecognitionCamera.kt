@@ -1,6 +1,5 @@
 package com.marinmiruna.vaultly.ui.screens.facerecognition
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
@@ -29,6 +28,7 @@ import com.google.mlkit.vision.face.FaceDetectorOptions
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
+import androidx.annotation.OptIn
 
 @Composable
 internal fun CameraPreview(
@@ -119,7 +119,6 @@ internal fun CameraPreview(
 }
 
 @OptIn(ExperimentalGetImage::class)
-@SuppressLint("UnsafeOptInUsageError")
 private fun processFaceAnalysisFrame(
     imageProxy: ImageProxy,
     faceDetector: FaceDetector,

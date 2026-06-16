@@ -1,5 +1,6 @@
 package com.marinmiruna.vaultly.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,8 +18,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -28,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -41,8 +39,10 @@ import com.marinmiruna.vaultly.domain.security.PasswordSecurityIssue
 import com.marinmiruna.vaultly.domain.security.PasswordSecurityReport
 import com.marinmiruna.vaultly.ui.components.ConfirmDeleteDialog
 import com.marinmiruna.vaultly.ui.components.PasswordGeneratorSheet
+import com.marinmiruna.vaultly.ui.components.ScreenHeader
 import com.marinmiruna.vaultly.ui.components.SecureTextField
 import com.marinmiruna.vaultly.viewmodel.PasswordsViewModel
+import com.marinmiruna.vaultly.ui.components.VaultlyTextField
 
 @Composable
 fun PasswordDetailScreen(
@@ -56,6 +56,7 @@ fun PasswordDetailScreen(
     val passwordCopiedMessage = stringResource(R.string.password_copied)
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showGeneratorSheet by remember { mutableStateOf(false) }
+    var showDiscardDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         if (!viewModel.isPasswordSessionValid()) {
@@ -79,6 +80,33 @@ fun PasswordDetailScreen(
                 showDeleteDialog = false
             }
         )
+    }
+
+    if (showDiscardDialog) {
+        ConfirmDeleteDialog(
+            title = stringResource(R.string.discard_changes_dialog_title),
+            message = stringResource(R.string.discard_changes_dialog_message),
+            confirmText = stringResource(R.string.discard_changes_confirm),
+            onConfirm = {
+                showDiscardDialog = false
+                onBack()
+            },
+            onDismiss = {
+                showDiscardDialog = false
+            }
+        )
+    }
+
+    fun handleBack() {
+        if (detailState.hasUnsavedChanges) {
+            showDiscardDialog = true
+        } else {
+            onBack()
+        }
+    }
+
+    BackHandler {
+        handleBack()
     }
 
     if (showGeneratorSheet) {
@@ -115,30 +143,14 @@ fun PasswordDetailScreen(
                 .padding(horizontal = 24.dp, vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
-            ) {
-                Text(
-                    text = if (passwordId == 0L) {
-                        stringResource(R.string.password_new_title)
-                    } else {
-                        stringResource(R.string.password_edit_title)
-                    },
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-
-                TextButton(onClick = onBack) {
-                    Text(
-                        text = stringResource(R.string.common_back),
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                }
-            }
-
+            ScreenHeader(
+                title = if (passwordId == 0L) {
+                    stringResource(R.string.password_new_title)
+                } else {
+                    stringResource(R.string.password_edit_title)
+                },
+                onBack = { handleBack() }
+            )
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp),
@@ -154,40 +166,24 @@ fun PasswordDetailScreen(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
-                    OutlinedTextField(
+                    VaultlyTextField(
                         value = detailState.service,
                         onValueChange = viewModel::onServiceChange,
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        shape = RoundedCornerShape(8.dp),
-                        label = {
-                            Text(text = stringResource(R.string.password_service_label))
-                        },
-                        colors = detailTextFieldColors()
+                        label = stringResource(R.string.password_service_label)
                     )
-
-                    OutlinedTextField(
+                    VaultlyTextField(
                         value = detailState.username,
                         onValueChange = viewModel::onUsernameChange,
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        shape = RoundedCornerShape(8.dp),
-                        label = {
-                            Text(text = stringResource(R.string.password_username_label))
-                        },
-                        colors = detailTextFieldColors()
+                        label = stringResource(R.string.password_username_label)
                     )
-
                     SecureTextField(
                         value = detailState.password,
                         onValueChange = viewModel::onPasswordChange,
                         label = stringResource(R.string.password_label)
                     )
-
                     PasswordSecurityWarnings(
                         securityReport = detailState.securityReport
                     )
-
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -209,7 +205,6 @@ fun PasswordDetailScreen(
                                 fontWeight = FontWeight.SemiBold
                             )
                         }
-
                         Button(
                             onClick = {
                                 viewModel.copyPasswordToClipboard(detailState.password)
@@ -236,32 +231,18 @@ fun PasswordDetailScreen(
                             )
                         }
                     }
-
-                    OutlinedTextField(
+                    VaultlyTextField(
                         value = detailState.url,
                         onValueChange = viewModel::onUrlChange,
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        shape = RoundedCornerShape(8.dp),
-                        label = {
-                            Text(text = stringResource(R.string.password_url_label))
-                        },
-                        colors = detailTextFieldColors()
+                        label = stringResource(R.string.password_url_label)
                     )
-
-                    OutlinedTextField(
+                    VaultlyTextField(
                         value = detailState.note,
                         onValueChange = viewModel::onNoteChange,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 120.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        label = {
-                            Text(text = stringResource(R.string.password_note_label))
-                        },
-                        colors = detailTextFieldColors()
+                        label = stringResource(R.string.password_note_label),
+                        modifier = Modifier.heightIn(min = 120.dp),
+                        singleLine = false
                     )
-
                     if (errorMessage != null) {
                         Text(
                             text = errorMessage,
@@ -271,7 +252,6 @@ fun PasswordDetailScreen(
                     }
                 }
             }
-
             Button(
                 onClick = {
                     viewModel.savePassword(onSaved = onBack)
@@ -289,7 +269,6 @@ fun PasswordDetailScreen(
                     fontWeight = FontWeight.SemiBold
                 )
             }
-
             if (detailState.canDelete) {
                 TextButton(
                     onClick = {
@@ -315,7 +294,6 @@ private fun PasswordSecurityWarnings(
     if (securityReport == null || securityReport.isSafe) {
         return
     }
-
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
@@ -337,7 +315,6 @@ private fun PasswordSecurityWarnings(
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.error
             )
-
             securityReport.issues.forEach { issue ->
                 Text(
                     text = passwordSecurityIssueText(issue),
@@ -383,16 +360,3 @@ private fun passwordSecurityIssueText(
         }
     }
 }
-
-@Composable
-private fun detailTextFieldColors() = OutlinedTextFieldDefaults.colors(
-    focusedTextColor = MaterialTheme.colorScheme.onSurface,
-    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-    focusedContainerColor = MaterialTheme.colorScheme.surface,
-    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-    focusedBorderColor = MaterialTheme.colorScheme.primary,
-    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
-    focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-    cursorColor = MaterialTheme.colorScheme.primary
-)

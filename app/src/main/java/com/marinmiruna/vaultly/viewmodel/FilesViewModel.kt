@@ -19,6 +19,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import com.marinmiruna.vaultly.data.sharing.DecryptedFileSharer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import android.graphics.BitmapFactory
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -35,6 +38,8 @@ class FilesViewModel @Inject constructor(
 
     private val isImporting = MutableStateFlow(false)
     private val openingFileId = MutableStateFlow<Long?>(null)
+
+    private val filePreviewBitmaps = MutableStateFlow<Map<Long, android.graphics.Bitmap>>(emptyMap())
 
     val authState: StateFlow<FilesAuthState> = MutableStateFlow(
         FilesAuthState(
@@ -70,13 +75,24 @@ class FilesViewModel @Inject constructor(
             )
         }
         .combine(openingFileId) { fileState, openingId ->
+            Sextuple(
+                fileState.first,
+                fileState.second,
+                fileState.third,
+                fileState.fourth,
+                fileState.fifth,
+                openingId
+            )
+        }
+        .combine(filePreviewBitmaps) { fileState, previews ->
             FilesUiState(
                 files = fileState.first,
                 searchQuery = fileState.second,
                 errorMessage = fileState.third,
                 successMessage = fileState.fourth,
                 isImporting = fileState.fifth,
-                openingFileId = openingId
+                openingFileId = fileState.sixth,
+                filePreviewBitmaps = previews
             )
         }
         .stateIn(
@@ -113,11 +129,13 @@ class FilesViewModel @Inject constructor(
             isImporting.value = true
 
             runCatching {
-                fileRepository.importFile(
-                    sourceUri = uri,
-                    displayName = displayName,
-                    mimeType = mimeType
-                )
+                withContext(Dispatchers.IO) {
+                    fileRepository.importFile(
+                        sourceUri = uri,
+                        displayName = displayName,
+                        mimeType = mimeType
+                    )
+                }
             }.onSuccess {
                 successMessage.value = application.getString(R.string.files_import_success)
             }.onFailure { exception ->
@@ -143,6 +161,52 @@ class FilesViewModel @Inject constructor(
                     context = application,
                     exception = exception
                 )
+            }
+        }
+    }
+
+    fun deleteFiles(
+        files: List<FileItem>,
+        onDeleted: () -> Unit
+    ) {
+        if (files.isEmpty()) {
+            return
+        }
+
+        viewModelScope.launch {
+            runCatching {
+                files.forEach { file ->
+                    fileRepository.deleteFile(file)
+                }
+            }.onSuccess {
+                successMessage.value = application.getString(R.string.files_delete_success)
+                onDeleted()
+            }.onFailure { exception ->
+                errorMessage.value = UserMessageMapper.fileOperationMessage(
+                    context = application,
+                    exception = exception
+                )
+            }
+        }
+    }
+
+    fun loadPreviewForFile(fileItem: FileItem) {
+        if (fileItem.previewEncryptedFilePath == null) {
+            return
+        }
+
+        if (filePreviewBitmaps.value.containsKey(fileItem.id)) {
+            return
+        }
+
+        viewModelScope.launch {
+            runCatching {
+                val previewBytes = fileRepository.decryptPreview(fileItem) ?: return@launch
+                BitmapFactory.decodeByteArray(previewBytes, 0, previewBytes.size)
+            }.onSuccess { bitmap ->
+                if (bitmap != null) {
+                    filePreviewBitmaps.value = filePreviewBitmaps.value + (fileItem.id to bitmap)
+                }
             }
         }
     }
@@ -200,7 +264,8 @@ data class FilesUiState(
     val errorMessage: String? = null,
     val successMessage: String? = null,
     val isImporting: Boolean = false,
-    val openingFileId: Long? = null
+    val openingFileId: Long? = null,
+    val filePreviewBitmaps: Map<Long, android.graphics.Bitmap> = emptyMap()
 )
 
 private data class Quadruple<A, B, C, D>(
@@ -216,4 +281,13 @@ private data class Quintuple<A, B, C, D, E>(
     val third: C,
     val fourth: D,
     val fifth: E
+)
+
+private data class Sextuple<A, B, C, D, E, F>(
+    val first: A,
+    val second: B,
+    val third: C,
+    val fourth: D,
+    val fifth: E,
+    val sixth: F
 )

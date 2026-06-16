@@ -145,8 +145,16 @@ class PasswordsViewModel @Inject constructor(
             }
                 .collect { password ->
                     if (password != null) {
-                        val report = passwordSecurityReports.value[password.id]
-
+                        val report = passwordSecurityReports.value[password.id] ?: PasswordSecurityReport(
+                            passwordId = password.id,
+                            issues = PasswordSecurityAnalyzer.analyzePassword(
+                                password = password.password,
+                                isReused = isPasswordReused(
+                                    password = password.password,
+                                    currentPasswordId = password.id
+                                )
+                            )
+                        )
                         _detailState.value = PasswordDetailUiState(
                             id = password.id,
                             service = password.service,
@@ -155,7 +163,12 @@ class PasswordsViewModel @Inject constructor(
                             url = password.url,
                             note = password.note,
                             canDelete = true,
-                            securityReport = report
+                            securityReport = report,
+                            originalService = password.service,
+                            originalUsername = password.username,
+                            originalPassword = password.password,
+                            originalUrl = password.url,
+                            originalNote = password.note
                         )
                     }
             }
@@ -176,7 +189,6 @@ class PasswordsViewModel @Inject constructor(
             password = password,
             currentPasswordId = state.id
         )
-
         _detailState.value = state.copy(
             password = password,
             securityReport = PasswordSecurityReport(
@@ -221,7 +233,6 @@ class PasswordsViewModel @Inject constructor(
             includeDigits = state.generatorDigits,
             includeSymbols = state.generatorSymbols
         )
-
         _detailState.value = state.copy(generatedPassword = generated)
     }
 
@@ -235,13 +246,24 @@ class PasswordsViewModel @Inject constructor(
     fun savePassword(onSaved: () -> Unit) {
         val state = _detailState.value
 
-        if (state.service.isBlank() || state.username.isBlank() || state.password.isBlank()) {
+        if (state.service.isBlank()) {
             _detailState.value = state.copy(
-                errorMessage = application.getString(R.string.password_validation_required_fields)
+                errorMessage = application.getString(R.string.password_validation_service_required)
             )
             return
         }
-
+        if (state.username.isBlank()) {
+            _detailState.value = state.copy(
+                errorMessage = application.getString(R.string.password_validation_username_required)
+            )
+            return
+        }
+        if (state.password.isBlank()) {
+            _detailState.value = state.copy(
+                errorMessage = application.getString(R.string.password_validation_password_required)
+            )
+            return
+        }
         viewModelScope.launch {
             runCatching {
                 passwordRepository.savePassword(
@@ -271,7 +293,6 @@ class PasswordsViewModel @Inject constructor(
             onDeleted()
             return
         }
-
         viewModelScope.launch {
             runCatching {
                 passwordRepository.deletePassword(
@@ -303,12 +324,10 @@ class PasswordsViewModel @Inject constructor(
         if (password.isBlank()) {
             return
         }
-
         secureClipboardManager.copySensitiveText(
             label = application.getString(R.string.password_clipboard_label),
             value = password
         )
-
         clearClipboardJob?.cancel()
         clearClipboardJob = viewModelScope.launch {
             delay(CLIPBOARD_CLEAR_DELAY_MILLIS)
@@ -364,5 +383,17 @@ data class PasswordDetailUiState(
     val generatorLength: Int = 16,
     val generatorUppercase: Boolean = true,
     val generatorDigits: Boolean = true,
-    val generatorSymbols: Boolean = true
-)
+    val generatorSymbols: Boolean = true,
+    val originalService: String = "",
+    val originalUsername: String = "",
+    val originalPassword: String = "",
+    val originalUrl: String = "",
+    val originalNote: String = ""
+) {
+    val hasUnsavedChanges: Boolean
+        get() = service != originalService ||
+                username != originalUsername ||
+                password != originalPassword ||
+                url != originalUrl ||
+                note != originalNote
+}

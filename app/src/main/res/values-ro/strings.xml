@@ -112,23 +112,25 @@
     <string name="lock_unlock_button">Deblochează cu biometria</string>
     <string name="lock_footer">Datele tale rămân private și protejate</string>
 
-    <string name="home_subtitle">Seiful tău digital securizat biometric</string>
+    <string name="home_subtitle">Seif digital securizat biometric</string>
     <string name="home_settings_button">Setări</string>
     <string name="home_modules_title">Module</string>
     <string name="home_protection_title">Protecție activă</string>
-    <string name="home_protection_body">Capturile de ecran sunt blocate, baza de date este criptată, iar secțiunile sensibile cer autentificare biometrică separată.</string>
+    <string name="home_protection_body">Date criptate, acces biometric și capturi blocate.</string>
+
     <string name="home_module_notes_title">Notițe</string>
-    <string name="home_module_notes_description">Text privat criptat în baza de date</string>
-    <string name="home_module_notes_marker">N</string>
+    <string name="home_module_notes_description">Notițe criptate</string>
+
     <string name="home_module_passwords_title">Parole</string>
-    <string name="home_module_passwords_description">Manager de parole cu re-autentificare</string>
-    <string name="home_module_passwords_marker">P</string>
+    <string name="home_module_passwords_description">Manager de parole</string>
+
     <string name="home_module_photos_title">Fotografii</string>
-    <string name="home_module_photos_description">Galerie privată criptată local</string>
-    <string name="home_module_photos_marker">F</string>
+    <string name="home_module_photos_description">Galerie criptată</string>
+
     <string name="home_module_files_title">Fișiere</string>
-    <string name="home_module_files_description">Documente criptate în internal storage</string>
-    <string name="home_module_files_marker">D</string>
+    <string name="home_module_files_description">Documente criptate</string>
+    <string name="face_demo_module_description">Analiză facială locală</string>
+
 
     <string name="settings_title">Setări</string>
     <string name="settings_security_title">Securitate activă</string>
@@ -190,6 +192,7 @@
     <string name="file_error_invalid_name">Fișierul selectat nu are un nume valid.</string>
     <string name="file_error_empty">Fișierul selectat este gol.</string>
     <string name="file_error_too_large">Fișierul selectat depășește limita de 100 MB.</string>
+    <string name="file_error_invalid_type">Fișierul selectat nu este un document acceptat.</string>
 
     <string name="photo_error_cannot_read">Fotografia selectată nu poate fi citită.</string>
     <string name="photo_error_cannot_process">Fotografia selectată nu poate fi procesată.</string>
@@ -215,12 +218,9 @@
 
     <string name="export_error_unsupported_version">Versiunea exportului nu este suportată.</string>
 
-    <string name="face_demo_title">Demo recunoaștere facială</string>
+    <string name="face_demo_title">Recunoaștere facială</string>
     <string name="face_demo_module_title">Demo facial</string>
-    <string name="face_demo_module_description">Analiză facială în timp real pentru cercetare</string>
-    <string name="face_demo_subtitle">Modul demo pentru detectare, analiză și recunoaștere facială locală.</string>
-    <string name="face_demo_placeholder_title">Modul de cercetare pentru recunoaștere facială</string>
-    <string name="face_demo_placeholder_body">Această secțiune va demonstra detectarea feței, punctele faciale și analiza biometrică în timp real.</string>
+    <string name="face_demo_subtitle">Detectare, analiză și verificare facială locală.</string>
 
     <string name="face_demo_camera_permission_title">Este necesar accesul la cameră</string>
     <string name="face_demo_camera_permission_body">Vaultly are nevoie de acces la cameră pentru a rula demo-ul de cercetare pentru recunoaștere facială.</string>
@@ -228,11 +228,62 @@
     <string name="face_demo_camera_permission_denied">Permisiunea pentru cameră a fost refuzată. Demo-ul nu poate rula fără acces la cameră.</string>
 
     <string name="face_demo_analysis_title">Analiză facială live</string>
-    <string name="face_demo_faces_detected">Fețe detectate: %1$d</string>
-    <string name="face_demo_smile_probability">Probabilitate zâmbet: %1$s</string>
-    <string name="face_demo_left_eye_probability">Ochi stâng deschis: %1$s</string>
-    <string name="face_demo_right_eye_probability">Ochi drept deschis: %1$s</string>
-    <string name="face_demo_head_angle">Unghi cap: X %1$s / Y %2$s / Z %3$s</string>
     <string name="face_demo_value_unavailable">Indisponibil</string>
+
+    <string name="file_error_duplicate">Acest fișier este deja salvat în Vaultly.</string>
+    <string name="photo_error_duplicate">Această fotografie este deja salvată în Vaultly.</string>
+
+    <string name="discard_changes_dialog_title">Renunți la modificări?</string>
+    <string name="discard_changes_dialog_message">Ai modificări nesalvate. Dacă te întorci acum, acestea se vor pierde.</string>
+
+    <string name="discard_changes_confirm">Renunță</string>
+
+    <string name="import_exit_dialog_title">Import în desfășurare</string>
+    <string name="import_exit_dialog_message">Așteaptă finalizarea importului înainte să părăsești acest modul.</string>
+    <string name="import_exit_dialog_confirm">OK</string>
+
+    <string name="theme_mode_title">Aspect</string>
+    <string name="theme_mode_system">Sistem</string>
+    <string name="theme_mode_light">Luminos</string>
+    <string name="theme_mode_dark">Întunecat</string>
+
+    <string name="selection_count_format">%1$d selectate</string>
+
+    <string name="photos_delete_selected_dialog_title">Ștergi fotografiile selectate?</string>
+    <string name="photos_delete_selected_dialog_message">Fotografiile criptate selectate vor fi șterse definitiv.</string>
+
+    <string name="files_delete_selected_dialog_title">Ștergi fișierele selectate?</string>
+    <string name="files_delete_selected_dialog_message">Fișierele criptate selectate vor fi șterse definitiv.</string>
+
+    <string name="password_validation_service_required">Completează serviciul.</string>
+    <string name="password_validation_username_required">Completează username-ul.</string>
+    <string name="password_validation_password_required">Completează parola.</string>
+
+    <string name="face_demo_save_reference_button">Salvează fața de referință</string>
+    <string name="face_demo_no_face_detected">Nicio față detectată</string>
+    <string name="face_demo_liveness_start">Începe verificarea liveness</string>
+    <string name="face_demo_liveness_retry">Reia verificarea liveness</string>
+    <string name="face_demo_liveness_restart">Repornește verificarea liveness</string>
+
+    <string name="face_demo_reference_missing">Referință FaceNet lipsă</string>
+    <string name="face_demo_embedding_unavailable">Embedding facial indisponibil</string>
+    <string name="face_demo_position_face_front">Poziționează fața frontal pentru recunoaștere</string>
+    <string name="face_demo_complete_liveness_first">Finalizează verificarea liveness înainte de potrivire</string>
+    <string name="face_demo_similarity_match">Similaritate FaceNet: %1$d%% - Potrivire</string>
+    <string name="face_demo_similarity_no_match">Similaritate FaceNet: %1$d%% - Nepotrivire</string>
+
+    <string name="face_demo_liveness_not_started">Liveness: verificare neîncepută</string>
+    <string name="face_demo_liveness_open_eyes">Liveness: privește frontal, cu ochii deschiși</string>
+    <string name="face_demo_liveness_blink">Liveness: clipește o dată</string>
+    <string name="face_demo_liveness_open_again">Liveness: deschide ochii din nou</string>
+    <string name="face_demo_liveness_verified">Liveness verificat</string>
+
+    <string name="face_demo_faces_detected_label">Fețe detectate</string>
+    <string name="face_demo_smile_probability_label">Zâmbet</string>
+    <string name="face_demo_left_eye_probability_label">Ochi stâng</string>
+    <string name="face_demo_right_eye_probability_label">Ochi drept</string>
+    <string name="face_demo_head_angle_label">Unghi cap</string>
+
+    <string name="face_demo_reference_saved">Fața de referință a fost salvată.</string>
 
 </resources>

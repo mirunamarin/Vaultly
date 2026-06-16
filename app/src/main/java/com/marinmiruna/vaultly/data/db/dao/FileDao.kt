@@ -29,6 +29,9 @@ interface FileDao {
     @Query("SELECT encryptedFilePath FROM files")
     suspend fun getAllEncryptedFilePaths(): List<String>
 
+    @Query("SELECT EXISTS(SELECT 1 FROM files WHERE contentHash = :contentHash)")
+    suspend fun existsByContentHash(contentHash: String): Boolean
+
     @Upsert
     suspend fun upsert(file: FileEntity): Long
 

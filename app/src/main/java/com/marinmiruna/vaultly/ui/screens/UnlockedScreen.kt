@@ -2,6 +2,7 @@ package com.marinmiruna.vaultly.ui.screens
 
 import androidx.compose.runtime.Composable
 import com.marinmiruna.vaultly.ui.navigation.VaultlyNavGraph
+import com.marinmiruna.vaultly.ui.theme.ThemeMode
 
 @Composable
 fun UnlockedScreen(
@@ -10,7 +11,9 @@ fun UnlockedScreen(
     onPasswordsAuthRequested: (onSuccess: () -> Unit) -> Unit,
     onFilesAuthRequested: (onSuccess: () -> Unit) -> Unit,
     onPhotosAuthRequested: (onSuccess: () -> Unit) -> Unit,
-    onExportAuthRequested: (onSuccess: () -> Unit) -> Unit
+    onExportAuthRequested: (onSuccess: () -> Unit) -> Unit,
+    themeMode: ThemeMode,
+    onThemeModeChange: (ThemeMode) -> Unit,
 ) {
     VaultlyNavGraph(
         onTrustedSystemActivityStarted = onTrustedSystemActivityStarted,
@@ -18,6 +21,8 @@ fun UnlockedScreen(
         onPasswordsAuthRequested = onPasswordsAuthRequested,
         onFilesAuthRequested = onFilesAuthRequested,
         onPhotosAuthRequested = onPhotosAuthRequested,
-        onExportAuthRequested = onExportAuthRequested
+        onExportAuthRequested = onExportAuthRequested,
+        themeMode = themeMode,
+        onThemeModeChange = onThemeModeChange
     )
 }

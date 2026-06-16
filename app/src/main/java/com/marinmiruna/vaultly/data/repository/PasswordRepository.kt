@@ -34,6 +34,16 @@ class PasswordRepository @Inject constructor(
         }
     }
 
+    suspend fun getAllPasswordEntries(): List<PasswordEntry> {
+        return passwordDao.getAllPasswords().map { entity ->
+            entity.toDomain()
+        }
+    }
+
+    suspend fun getPasswordEntryById(id: Long): PasswordEntry? {
+        return passwordDao.getPasswordById(id)?.toDomain()
+    }
+
     fun observePasswordSecurityInputs(): Flow<List<PasswordSecurityInput>> {
         return passwordDao.observeAllPasswords().map { passwordEntities ->
             passwordEntities.map { entity ->

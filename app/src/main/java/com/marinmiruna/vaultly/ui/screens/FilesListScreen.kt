@@ -1,35 +1,40 @@
 package com.marinmiruna.vaultly.ui.screens
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.OpenableColumns
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,16 +43,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.marinmiruna.vaultly.R
 import com.marinmiruna.vaultly.domain.model.FileItem
 import com.marinmiruna.vaultly.ui.components.ConfirmDeleteDialog
+import com.marinmiruna.vaultly.ui.components.HeaderButton
+import com.marinmiruna.vaultly.ui.components.ScreenHeader
 import com.marinmiruna.vaultly.viewmodel.FilesViewModel
+import com.marinmiruna.vaultly.ui.components.VaultlyTextField
 
 @Composable
 fun FilesListScreen(
@@ -61,12 +73,62 @@ fun FilesListScreen(
     val noAppAvailableMessage = stringResource(R.string.files_no_app_available)
     val errorMessage = uiState.errorMessage
     val successMessage = uiState.successMessage
-    var filePendingDelete by remember { mutableStateOf<FileItem?>(null) }
+
+    var showImportExitDialog by remember { mutableStateOf(false) }
+    var selectedFileIds by remember { mutableStateOf<Set<Long>>(emptySet()) }
+    var showDeleteSelectedDialog by remember { mutableStateOf(false) }
+
+    val isSelectionMode = selectedFileIds.isNotEmpty()
+
+    fun toggleFileSelection(fileId: Long) {
+        selectedFileIds = if (fileId in selectedFileIds) {
+            selectedFileIds - fileId
+        } else {
+            selectedFileIds + fileId
+        }
+    }
+
+    fun clearSelection() {
+        selectedFileIds = emptySet()
+    }
+
+    fun handleBack() {
+        when {
+            isSelectionMode -> clearSelection()
+            uiState.isImporting -> showImportExitDialog = true
+            else -> onBack()
+        }
+    }
+
+    fun openFile(file: FileItem) {
+        viewModel.createShareUriForFile(file) { shareUri ->
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(shareUri, file.mimeType)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            runCatching {
+                onTrustedSystemActivityStarted()
+                context.startActivity(
+                    Intent.createChooser(intent, openChooserTitle)
+                )
+            }.onFailure {
+                android.widget.Toast.makeText(
+                    context,
+                    noAppAvailableMessage,
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         if (!viewModel.isFilesSessionValid()) {
             onBack()
         }
+    }
+
+    BackHandler {
+        handleBack()
     }
 
     LaunchedEffect(errorMessage) {
@@ -91,24 +153,46 @@ fun FilesListScreen(
         }
     }
 
-    filePendingDelete?.let { file ->
+    if (showImportExitDialog) {
         ConfirmDeleteDialog(
-            title = stringResource(R.string.files_delete_dialog_title),
-            message = stringResource(R.string.files_delete_dialog_message),
+            title = stringResource(R.string.import_exit_dialog_title),
+            message = stringResource(R.string.import_exit_dialog_message),
+            confirmText = stringResource(R.string.import_exit_dialog_confirm),
             onConfirm = {
-                filePendingDelete = null
-                viewModel.deleteFile(file)
+                showImportExitDialog = false
             },
             onDismiss = {
-                filePendingDelete = null
+                showImportExitDialog = false
+            }
+        )
+    }
+
+    if (showDeleteSelectedDialog) {
+        val selectedFiles = uiState.files.filter { file ->
+            file.id in selectedFileIds
+        }
+        ConfirmDeleteDialog(
+            title = stringResource(R.string.files_delete_selected_dialog_title),
+            message = stringResource(R.string.files_delete_selected_dialog_message),
+            onConfirm = {
+                showDeleteSelectedDialog = false
+                viewModel.deleteFiles(
+                    files = selectedFiles,
+                    onDeleted = {
+                        clearSelection()
+                    }
+                )
+            },
+            onDismiss = {
+                showDeleteSelectedDialog = false
             }
         )
     }
 
     val filePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument()
-    ) { uri: Uri? ->
-        if (uri != null) {
+        contract = ActivityResultContracts.OpenMultipleDocuments()
+    ) { uris: List<Uri> ->
+        uris.forEach { uri ->
             val displayName = context.resolveFileDisplayName(uri)
             val mimeType = context.contentResolver.getType(uri) ?: "application/octet-stream"
 
@@ -123,29 +207,42 @@ fun FilesListScreen(
     Scaffold(
         modifier = Modifier.safeDrawingPadding(),
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    if (!uiState.isImporting) {
-                        onTrustedSystemActivityStarted()
-                        filePickerLauncher.launch(arrayOf("*/*"))
+            if (!isSelectionMode) {
+                FloatingActionButton(
+                    onClick = {
+                        if (!uiState.isImporting) {
+                            onTrustedSystemActivityStarted()
+                            filePickerLauncher.launch(
+                                arrayOf(
+                                    "application/pdf",
+                                    "text/plain",
+                                    "application/msword",
+                                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                    "application/vnd.ms-excel",
+                                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                    "application/vnd.ms-powerpoint",
+                                    "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                                )
+                            )
+                        }
+                    },
+                    shape = RoundedCornerShape(8.dp),
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ) {
+                    if (uiState.isImporting) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(22.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
+                        Text(
+                            text = "+",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.SemiBold
+                        )
                     }
-                },
-                shape = RoundedCornerShape(8.dp),
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ) {
-                if (uiState.isImporting) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(22.dp),
-                        strokeWidth = 2.dp,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                } else {
-                    Text(
-                        text = "+",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold
-                    )
                 }
             }
         },
@@ -162,50 +259,41 @@ fun FilesListScreen(
                     .fillMaxSize()
                     .padding(horizontal = 24.dp, vertical = 24.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Text(
-                        text = stringResource(R.string.files_title),
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-
-                    TextButton(onClick = onBack) {
-                        Text(
+                ScreenHeader(
+                    title = if (isSelectionMode) {
+                        stringResource(R.string.selection_count_format, selectedFileIds.size)
+                    } else {
+                        stringResource(R.string.files_title)
+                    },
+                    titleStyle = if (isSelectionMode) {
+                        MaterialTheme.typography.titleLarge
+                    } else {
+                        MaterialTheme.typography.headlineMedium
+                    },
+                    onBack = { handleBack() },
+                    actions = {
+                        if (isSelectionMode) {
+                            HeaderButton(
+                                text = stringResource(R.string.common_delete),
+                                onClick = {
+                                    showDeleteSelectedDialog = true
+                                },
+                                containerColor = MaterialTheme.colorScheme.error,
+                                contentColor = MaterialTheme.colorScheme.onError
+                            )
+                        }
+                        HeaderButton(
                             text = stringResource(R.string.common_back),
-                            style = MaterialTheme.typography.labelLarge
+                            onClick = { handleBack() }
                         )
                     }
-                }
-
-                OutlinedTextField(
+                )
+                VaultlyTextField(
                     value = uiState.searchQuery,
                     onValueChange = viewModel::onSearchQueryChange,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 20.dp),
-                    singleLine = true,
-                    shape = RoundedCornerShape(8.dp),
-                    label = {
-                        Text(text = stringResource(R.string.files_search_label))
-                    },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-                        focusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
-                        focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        cursorColor = MaterialTheme.colorScheme.primary
-                    )
+                    label = stringResource(R.string.files_search_label),
+                    modifier = Modifier.padding(top = 20.dp)
                 )
-
                 if (uiState.isImporting) {
                     Row(
                         modifier = Modifier
@@ -219,7 +307,6 @@ fun FilesListScreen(
                             strokeWidth = 2.dp,
                             color = MaterialTheme.colorScheme.primary
                         )
-
                         Text(
                             text = stringResource(R.string.files_importing),
                             style = MaterialTheme.typography.bodyMedium,
@@ -227,7 +314,6 @@ fun FilesListScreen(
                         )
                     }
                 }
-
                 if (uiState.files.isEmpty()) {
                     EmptyFilesState(
                         modifier = Modifier
@@ -235,11 +321,13 @@ fun FilesListScreen(
                             .padding(top = 40.dp)
                     )
                 } else {
-                    LazyColumn(
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(top = 20.dp),
                         contentPadding = PaddingValues(bottom = 96.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(
@@ -248,31 +336,21 @@ fun FilesListScreen(
                         ) { file ->
                             FileCard(
                                 file = file,
-                                metadataText = file.mimeType,
+                                previewBitmap = uiState.filePreviewBitmaps[file.id],
+                                onLoadPreview = {
+                                    viewModel.loadPreviewForFile(file)
+                                },
                                 isOpening = uiState.openingFileId == file.id,
-                                onOpen = {
-                                    viewModel.createShareUriForFile(file) { shareUri ->
-                                        val intent = Intent(Intent.ACTION_VIEW).apply {
-                                            setDataAndType(shareUri, file.mimeType)
-                                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                        }
-
-                                        runCatching {
-                                            onTrustedSystemActivityStarted()
-                                            context.startActivity(
-                                                Intent.createChooser(intent, openChooserTitle)
-                                            )
-                                        }.onFailure {
-                                            android.widget.Toast.makeText(
-                                                context,
-                                                noAppAvailableMessage,
-                                                android.widget.Toast.LENGTH_LONG
-                                            ).show()
-                                        }
+                                isSelected = file.id in selectedFileIds,
+                                onClick = {
+                                    if (isSelectionMode) {
+                                        toggleFileSelection(file.id)
+                                    } else {
+                                        openFile(file)
                                     }
                                 },
-                                onDelete = {
-                                    filePendingDelete = file
+                                onLongClick = {
+                                    toggleFileSelection(file.id)
                                 }
                             )
                         }
@@ -283,42 +361,109 @@ fun FilesListScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun FileCard(
     file: FileItem,
-    metadataText: String,
+    previewBitmap: Bitmap?,
+    onLoadPreview: () -> Unit,
     isOpening: Boolean,
-    onOpen: () -> Unit,
-    onDelete: () -> Unit
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
 ) {
+    LaunchedEffect(file.id, file.previewEncryptedFilePath) {
+        onLoadPreview()
+    }
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            ),
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(
-            width = 1.dp,
-            color = MaterialTheme.colorScheme.outlineVariant
+            width = if (isSelected) 2.dp else 1.dp,
+            color = if (isSelected) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.outlineVariant
+            }
         ),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = if (isSelected) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.surfaceVariant
+            }
         )
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+            ) {
+                when {
+                    previewBitmap != null -> {
+                        Image(
+                            bitmap = previewBitmap.asImageBitmap(),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+                    file.previewEncryptedFilePath != null -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .align(Alignment.Center),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    else -> {
+                        Text(
+                            text = file.fileTypeLabel(),
+                            modifier = Modifier.align(Alignment.Center),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                if (isSelected) {
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(6.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ) {
+                        Text(
+                            text = "✓",
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+            }
             Text(
                 text = file.displayName,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
-
-            Text(
-                text = metadataText,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
             if (isOpening) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -329,41 +474,12 @@ private fun FileCard(
                         strokeWidth = 2.dp,
                         color = MaterialTheme.colorScheme.primary
                     )
-
                     Text(
                         text = stringResource(R.string.files_preparing_open),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-            }
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.files_open_action),
-                    modifier = Modifier.clickable(
-                        enabled = !isOpening,
-                        onClick = onOpen
-                    ),
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Medium,
-                    color = if (isOpening) {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    } else {
-                        MaterialTheme.colorScheme.primary
-                    }
-                )
-
-                Text(
-                    text = stringResource(R.string.files_delete_action),
-                    modifier = Modifier.clickable(onClick = onDelete),
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.error
-                )
             }
         }
     }
@@ -394,7 +510,6 @@ private fun EmptyFilesState(
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface
             )
-
             Text(
                 text = stringResource(R.string.files_empty_message),
                 style = MaterialTheme.typography.bodyMedium,
@@ -405,7 +520,8 @@ private fun EmptyFilesState(
 }
 
 private fun android.content.Context.resolveFileDisplayName(uri: Uri): String {
-    val fallbackName = getString(R.string.files_fallback_name_prefix) + "_${System.currentTimeMillis()}"
+    val fallbackName = getString(R.string.files_fallback_name_prefix) +
+            "_${System.currentTimeMillis()}"
 
     val cursor = contentResolver.query(
         uri,
@@ -419,12 +535,27 @@ private fun android.content.Context.resolveFileDisplayName(uri: Uri): String {
         if (!it.moveToFirst()) {
             return fallbackName
         }
-
         val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
         if (nameIndex < 0) {
             return fallbackName
         }
-
         return it.getString(nameIndex) ?: fallbackName
+    }
+}
+
+private fun FileItem.fileTypeLabel(): String {
+    return when (mimeType) {
+        "application/pdf" -> "PDF"
+        "text/plain" -> "TXT"
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> "DOC"
+
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" -> "XLS"
+
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation" -> "PPT"
+
+        else -> "FILE"
     }
 }

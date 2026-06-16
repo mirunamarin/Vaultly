@@ -13,5 +13,7 @@ data class PhotoEntity(
     val previewEncryptedFilePath: String,
     val mimeType: String,
     val sizeBytes: Long,
-    val importedAt: Long
+    val importedAt: Long,
+    val contentHash: String
+
 )

@@ -14,6 +14,7 @@ import com.marinmiruna.vaultly.R
 fun PhotosAuthScreen(
     onAuthenticateClick: () -> Unit,
     onAuthenticated: () -> Unit,
+    onBack: () -> Unit,
     viewModel: PhotosViewModel = hiltViewModel()
 ) {
     val authState by viewModel.authState.collectAsStateWithLifecycle()
@@ -25,6 +26,8 @@ fun PhotosAuthScreen(
     LaunchedEffect(authState.isAuthenticated) {
         if (authState.isAuthenticated) {
             onAuthenticated()
+        } else {
+            onAuthenticateClick()
         }
     }
 
@@ -33,6 +36,7 @@ fun PhotosAuthScreen(
         title = stringResource(R.string.photos_auth_title),
         message = stringResource(R.string.photos_auth_message),
         buttonText = stringResource(R.string.photos_auth_button),
+        onBack = onBack,
         onAuthenticateClick = onAuthenticateClick
     ) {
         Unit
